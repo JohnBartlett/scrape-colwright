@@ -11,11 +11,17 @@ module.exports = async (req, res) => {
 
   // (Uncomment/adapt if login required)
   
-  await page.goto('https://www.colwright.com/login');
-  await page.type('input[name="username"]', process.env.COLWRIGHT_USERNAME);
-  await page.type('input[name="password"]', process.env.COLWRIGHT_PASSWORD);
-  await page.click('button[type="submit"]');
-  await page.waitForNavigation();
+await page.goto('https://www.colwright.com/login');
+
+// Fill in the login form with your environment variables
+await page.fill('input[name="username"]', process.env.COLWRIGHT_USERNAME);
+await page.fill('input[name="password"]', process.env.COLWRIGHT_PASSWORD);
+
+// Click submit and wait for navigation AT THE SAME TIME
+await Promise.all([
+  page.waitForNavigation({ waitUntil: 'networkidle' }),
+  page.click('button[type="submit"]'),
+]);
   
 
   await page.goto('https://www.colwright.com/inventory', { waitUntil: 'networkidle' });
