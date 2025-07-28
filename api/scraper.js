@@ -18,10 +18,16 @@ module.exports = async (req, res) => {
   console.log('Navigating to login page');
   await page.goto('https://www.colwright.com/login', { waitUntil: 'networkidle' });
 
+  // Take a screenshot for debugging
+  await page.screenshot({ path: '/tmp/login-page.png' });
+  console.log('Screenshot taken: /tmp/login-page.png');
+
+  console.log('Waiting for username input');
+  await page.waitForSelector('input[name="username"]', { timeout: 60000 }); // Increase timeout
+
   console.log('Filling in credentials');
   await page.fill('input[name="username"]', process.env.COLWRIGHT_USERNAME);
   await page.fill('input[name="password"]', process.env.COLWRIGHT_PASSWORD);
-
   console.log('Submitting login and waiting for navigation');
   // Use Promise.all to guard against missed navigation events.
   await Promise.all([
