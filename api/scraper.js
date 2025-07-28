@@ -2,107 +2,112 @@ const chromium = require('@sparticuz/chromium');
 const { chromium: playwrightChromium } = require('playwright-core');
 
 module.exports = async (req, res) => {
+  // For manual debugging of serverless timeout (remove later)
+  // setTimeout(() => { throw new Error("Manual timeout"); }, 55000);
+
+  console.log('Launching browser');
   const browser = await playwrightChromium.launch({
     args: chromium.args,
     executablePath: await chromium.executablePath(),
     headless: true,
   });
+
   const page = await browser.newPage();
 
-  // (Uncomment/adapt if login required)
-  
-await page.goto('https://www.colwright.com/login');
+  // ------------ LOGIN ------------
+  console.log('Navigating to login page');
+  await page.goto('https://www.colwright.com/login', { waitUntil: 'networkidle' });
 
-// Fill in the login form with your environment variables
-await page.fill('input[name="username"]', process.env.COLWRIGHT_USERNAME);
-await page.fill('input[name="password"]', process.env.COLWRIGHT_PASSWORD);
+  console.log('Filling in credentials');
+  await page.fill('input[name="username"]', process.env.COLWRIGHT_USERNAME);
+  await page.fill('input[name="password"]', process.env.COLWRIGHT_PASSWORD);
 
-// Click submit and wait for navigation AT THE SAME TIME
-await Promise.all([
-  page.waitForNavigation({ waitUntil: 'networkidle' }),
-  page.click('button[type="submit"]'),
-]);
-  
+  console.log('Submitting login and waiting for navigation');
+  // Use Promise.all to guard against missed navigation events.
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle' }),
+    page.click('button[type="submit"]')
+  ]);
+  console.log('Login completed / redirected');
 
+  // ------------ INVENTORY PAGE ------------
+  console.log('Loading inventory');
   await page.goto('https://www.colwright.com/inventory', { waitUntil: 'networkidle' });
 
+  await page.waitForSelector('table', { timeout: 8000 }); // Adjust selector if needed
+  console.log('Table loaded');
+
   const results = [];
-  let hasNextPage = true;
-  let pageNum = 1;
+  const rows = await page.$$('table tr[data-id]'); // Adjust selector to match your table rows
 
-  while (hasNextPage) {
-    await page.waitForSelector('table'); // adjust selector if needed
+  if (!rows.length) {
+    console.log('No data rows found!');
+  }
 
-    // ==== MAIN EXTRACTION LOGIC FOR ONE PAGE ====
-    const rows = await page.$$('table tr[data-id]'); // Adjust selector!
+  // ------------- LIMIT TO FIRST ROW FOR TESTING TIMEOUTS -------------
+  // Remove or increase this for production!
+  for (let r = 0; r < Math.min(1, rows.length); r++) {
+    const row = rows[r];
+    console.log(`Processing row ${r}`);
 
-    for (const row of rows) {
-      // Extract fields for this row
-      const fields = await row.$$eval('td', tds => tds.map(td => td.textContent.trim()));
-      const rowId = await row.getAttribute('data-id');
-      let images = [];
+    // Extract just cell text for now, you can add more fields as needed
+    const fields = await row.$$eval('td', tds => tds.map(td => td.textContent.trim()));
+    const rowId = await row.getAttribute('data-id');
+    let images = [];
 
-      // ---- Find and click the paperclip (attachment) icon to open modal (adjust selector!)
-      const paperclip = await row.$('.fa-paperclip'); // Adjust if needed
-      if (paperclip) {
-        await paperclip.click();
-        await page.waitForSelector('.modal.show', { timeout: 2000 }).catch(() => {});
+    // Try paperclip/modal (adjust selector as needed)
+    const paperclip = await row.$('.fa-paperclip'); // Update this if your page uses a different class!
+    if (paperclip) {
+      console.log('Found paperclip, clicking...');
+      await paperclip.click();
+      await page.waitForSelector('.modal.show', { timeout: 4000 }).catch(() => console.log('Modal did not open in time'));
 
-        // ---- Click on "Images" or "Photos" tab in modal...
-        // Try both text variations! Adjust selector for your modal tabs.
-        let tabClicked = false;
+      // Try "Images" or "Photos" tab
+      let tabClicked = false;
+      try {
+        await page.click('.modal .nav-link:has-text("Images")');
+        tabClicked = true;
+      } catch (e) {
         try {
-          await page.click('.modal .nav-link:has-text("Images")');
+          await page.click('.modal .nav-link:has-text("Photos")');
           tabClicked = true;
-        } catch {
-          try {
-            await page.click('.modal .nav-link:has-text("Photos")');
-            tabClicked = true;
-          } catch {}
+        } catch (e2) {
+          console.log('Images/Photos tab not found');
         }
-
-        if (tabClicked) {
-          await page.waitForSelector('.modal .tab-pane.active img', { timeout: 1000 }).catch(() => {});
-          // Get all thumbnails in the active tab
-          const imgThumbs = await page.$$('.modal .tab-pane.active img');
-          for (let i = 0; i < imgThumbs.length; i++) {
-            await imgThumbs[i].click();
-            await page.waitForTimeout(300);
-
-            // Try to get the large image (adjust selector as needed)
-            const largeImg = await page.$('.modal img.full-size, .modal .image-preview img, .modal img');
-            if (largeImg) {
-              const src = await largeImg.getAttribute('src');
-              if (src && !images.includes(src)) images.push(src);
-            }
+      }
+      if (tabClicked) {
+        await page.waitForSelector('.modal .tab-pane.active img', { timeout: 1500 }).catch(() => {});
+        const imgThumbs = await page.$$('.modal .tab-pane.active img');
+        for (let i = 0; i < imgThumbs.length; i++) {
+          await imgThumbs[i].click();
+          await page.waitForTimeout(200);
+          // Grab the largest image (adjust selector for your modal)
+          const largeImg = await page.$('.modal img.full-size, .modal .image-preview img, .modal img');
+          if (largeImg) {
+            const src = await largeImg.getAttribute('src');
+            if (src && !images.includes(src)) images.push(src);
           }
         }
-
-        // ---- Close modal
-        const closeBtn = await page.$('.modal .close, .modal [aria-label="Close"]');
-        if (closeBtn) await closeBtn.click();
-        await page.waitForTimeout(200); // wait for modal to close
       }
-
-      results.push({
-        id: rowId,
-        fields,
-        images,
-      });
-    }
-
-    // ==== PAGINATE IF POSSIBLE ====
-    const nextBtn = await page.$('ul.pagination li.next:not(.disabled) a');
-    if (nextBtn) {
-      await nextBtn.click();
-      pageNum++;
-      await page.waitForTimeout(800);
+      // Close modal (adjust selector as needed)
+      const closeBtn = await page.$('.modal .close, .modal [aria-label="Close"]');
+      if (closeBtn) await closeBtn.click();
+      await page.waitForTimeout(200);
     } else {
-      hasNextPage = false;
+      console.log('No paperclip found in row');
     }
+
+    // Add to results, one row only for now
+    results.push({
+      id: rowId,
+      fields,
+      images,
+    });
+    // REMOVE this next line if you want more than the first row:
+    break;
   }
 
   await browser.close();
-
+  console.log('Browser closed, returning results');
   res.status(200).json({ records: results });
 };
