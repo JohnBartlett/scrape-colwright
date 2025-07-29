@@ -1,119 +1,311 @@
-const chromium = require('@sparticuz/chromium');
-const { chromium: playwrightChromium } = require('playwright-core');
+const puppeteer = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+const fs = require('fs');
+const path = require('path');
+const Database = require('better-sqlite3');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+puppeteer.use(StealthPlugin());
 
-module.exports = async (req, res) => {
-  // For manual debugging of serverless timeout (remove later)
-  // setTimeout(() => { throw new Error("Manual timeout"); }, 55000);
+if (!fs.existsSync('images')) fs.mkdirSync('images');
 
-  console.log('Launching browser');
-  const browser = await playwrightChromium.launch({
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
-    headless: true,
-  });
+const db = new Database('inventory.db');
+db.exec(`
+CREATE TABLE IF NOT EXISTS items (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  date TEXT,
+  item_id TEXT,
+  qty TEXT,
+  description TEXT,
+  shipper TEXT,
+  client TEXT,
+  client_url TEXT,
+  item_num TEXT,
+  po_num TEXT,
+  image_url TEXT,
+  image_file TEXT
+)`);
+const insertStmt = db.prepare(`INSERT INTO items
+  (date, item_id, qty, description, shipper, client, client_url, item_num, po_num, image_url, image_file)
+  VALUES (@date, @item_id, @qty, @description, @shipper, @client, @client_url, @item_num, @po_num, @image_url, @image_file)`);
 
-  const page = await browser.newPage();
+async function ensureModalClosed(page, i) {
+  const modalPresent = await page.evaluate(
+    () => !!document.querySelector('.modal.fade.in') || !!document.querySelector('#mdModal.in')
+  );
+  if (modalPresent) {
+    console.warn(`Warning: Modal still present before clicking row ${i + 1}. Forcing Escape...`);
+    await page.keyboard.press('Escape');
+    await page.waitForFunction(
+      () =>
+        !document.querySelector('.modal.fade.in') &&
+        !document.querySelector('#mdModal.in'),
+      {}
+    );
+  }
+}
 
-  // ------------ LOGIN ------------
-  console.log('Navigating to login page');
-  await page.goto('https://www.colwright.com/login', { waitUntil: 'networkidle' });
+async function extraAggressiveModalClose(page, i, pageNum) {
+  let modalStillOpen = true;
 
-  // Take a screenshot for debugging
-  await page.screenshot({ path: '/tmp/login-page.png' });
-  console.log('Screenshot taken: /tmp/login-page.png');
+  // 1. Wait for modal to close by any soft method (after click/Escape)
+  if (modalStillOpen) console.log("[STAGE 1] Waiting for modal close after click/Escape...");
+  try {
+    await page.waitForFunction(
+      () =>
+        !document.querySelector('.modal.fade.in') &&
+        !document.querySelector('#mdModal.in'),
+      { timeout: 3000 }
+    );
+    modalStillOpen = false;
+  } catch { modalStillOpen = true; }
 
-  console.log('Waiting for username input');
-  await page.waitForSelector('input[name="username"]', { timeout: 60000 }); // Increase timeout
-
-  console.log('Filling in credentials');
-  await page.fill('input[name="username"]', process.env.COLWRIGHT_USERNAME);
-  await page.fill('input[name="password"]', process.env.COLWRIGHT_PASSWORD);
-  console.log('Submitting login and waiting for navigation');
-  // Use Promise.all to guard against missed navigation events.
-  await Promise.all([
-    page.waitForNavigation({ waitUntil: 'networkidle' }),
-    page.click('button[type="submit"]')
-  ]);
-  console.log('Login completed / redirected');
-
-  // ------------ INVENTORY PAGE ------------
-  console.log('Loading inventory');
-  await page.goto('https://www.colwright.com/inventory', { waitUntil: 'networkidle' });
-
-  await page.waitForSelector('table', { timeout: 8000 }); // Adjust selector if needed
-  console.log('Table loaded');
-
-  const results = [];
-  const rows = await page.$$('table tr[data-id]'); // Adjust selector to match your table rows
-
-  if (!rows.length) {
-    console.log('No data rows found!');
+  // 2. Try clicking body/backdrop
+  if (modalStillOpen) {
+    console.warn(`[STAGE 2] Modal didn't close for row ${i + 1} (page ${pageNum}). Trying backdrop click...`);
+    await page.click('body', { clickCount: 1 });
+    try {
+      await page.waitForFunction(
+        () =>
+          !document.querySelector('.modal.fade.in') &&
+          !document.querySelector('#mdModal.in'),
+        { timeout: 3500 }
+      );
+      modalStillOpen = false;
+    } catch { modalStillOpen = true; }
   }
 
-  // ------------- LIMIT TO FIRST ROW FOR TESTING TIMEOUTS -------------
-  // Remove or increase this for production!
-  for (let r = 0; r < Math.min(1, rows.length); r++) {
-    const row = rows[r];
-    console.log(`Processing row ${r}`);
-
-    // Extract just cell text for now, you can add more fields as needed
-    const fields = await row.$$eval('td', tds => tds.map(td => td.textContent.trim()));
-    const rowId = await row.getAttribute('data-id');
-    let images = [];
-
-    // Try paperclip/modal (adjust selector as needed)
-    const paperclip = await row.$('.fa-paperclip'); // Update this if your page uses a different class!
-    if (paperclip) {
-      console.log('Found paperclip, clicking...');
-      await paperclip.click();
-      await page.waitForSelector('.modal.show', { timeout: 4000 }).catch(() => console.log('Modal did not open in time'));
-
-      // Try "Images" or "Photos" tab
-      let tabClicked = false;
+  // 3. Try a "real" mouse hover/click on the close button
+  if (modalStillOpen) {
+    console.warn(`[STAGE 3] Modal didn't close after backdrop click for row ${i + 1} (page ${pageNum}). Trying mouse move/click...`);
+    const closeBtn = await page.$('.modal.fade.in .close, #mdModal.in .close');
+    if (closeBtn) {
       try {
-        await page.click('.modal .nav-link:has-text("Images")');
-        tabClicked = true;
+        const box = await closeBtn.boundingBox();
+        if (box) {
+          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+          await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2, { delay: 150 });
+          await new Promise(res => setTimeout(res, 1000));
+        }
       } catch (e) {
-        try {
-          await page.click('.modal .nav-link:has-text("Photos")');
-          tabClicked = true;
-        } catch (e2) {
-          console.log('Images/Photos tab not found');
-        }
+        console.warn('Mouse move+click on close button failed:', e.message);
       }
-      if (tabClicked) {
-        await page.waitForSelector('.modal .tab-pane.active img', { timeout: 1500 }).catch(() => {});
-        const imgThumbs = await page.$$('.modal .tab-pane.active img');
-        for (let i = 0; i < imgThumbs.length; i++) {
-          await imgThumbs[i].click();
-          await page.waitForTimeout(200);
-          // Grab the largest image (adjust selector for your modal)
-          const largeImg = await page.$('.modal img.full-size, .modal .image-preview img, .modal img');
-          if (largeImg) {
-            const src = await largeImg.getAttribute('src');
-            if (src && !images.includes(src)) images.push(src);
-          }
-        }
+    }
+    try {
+      await page.waitForFunction(
+        () =>
+          !document.querySelector('.modal.fade.in') &&
+          !document.querySelector('#mdModal.in'),
+        { timeout: 3000 }
+      );
+      modalStillOpen = false;
+    } catch { modalStillOpen = true; }
+  }
+
+  // 4. Last resort: forcibly remove modal from DOM
+  if (modalStillOpen) {
+    console.error(
+      `[STAGE 4] Modal for row ${i + 1} (page ${pageNum}) still stuck after all attempts. Force-removing from DOM.`
+    );
+    const modalHtml = await page.evaluate(() => {
+      const m = document.querySelector('.modal.fade.in,#mdModal.in');
+      if (m) {
+        const html = m.outerHTML;
+        m.remove();
+        return html;
+      } else {
+        return '(none)';
       }
-      // Close modal (adjust selector as needed)
-      const closeBtn = await page.$('.modal .close, .modal [aria-label="Close"]');
-      if (closeBtn) await closeBtn.click();
-      await page.waitForTimeout(200);
-    } else {
-      console.log('No paperclip found in row');
+    });
+    console.error(`[RESULT] Force-removed modal HTML:`, modalHtml);
+    return false;
+  }
+  return true;
+}
+
+async function scrapePage(page, pageNum) {
+  await page.waitForSelector('#activeItems table tbody tr');
+  const rows = await page.$$('#activeItems table tbody tr');
+  console.log(`Scraping ${rows.length} rows from page ${pageNum}.`);
+  for (let i = 0; i < rows.length; i++) {
+    await new Promise(res => setTimeout(res, 1200));
+    await ensureModalClosed(page, i);
+
+    const row = rows[i];
+    const columns = await row.$$eval('td', tds => tds.map(td => td.innerText.trim()));
+    const clientUrl = await row.$eval('td:nth-child(6) a', a => a.href).catch(() => '');
+
+    // Click row to open modal
+    await row.click();
+
+    let modalAppeared = true;
+    try {
+      await page.waitForSelector('.modal.fade.in,#mdModal.in', { timeout: 10000 });
+    } catch (e) {
+      console.warn(`Modal did not appear for row ${i + 1} on page ${pageNum}, skipping.`);
+      const modalHtml = await page.evaluate(() => {
+        const m = document.querySelector('.modal.fade.in,#mdModal.in');
+        return m ? m.outerHTML : '(none)';
+      });
+      console.warn(`Modal HTML after click row ${i + 1}:`, modalHtml);
+      modalAppeared = false;
+    }
+    if (!modalAppeared) continue;
+
+    // Click Images tab if exists
+    const imgTabSelector = '.modal.fade.in .imagesTab, #mdModal.in .imagesTab';
+    const imgTab = await page.$(imgTabSelector);
+    if (imgTab) {
+      await imgTab.click();
+      await new Promise(resolve => setTimeout(resolve, 700));
     }
 
-    // Add to results, one row only for now
-    results.push({
-      id: rowId,
-      fields,
-      images,
-    });
-    // REMOVE this next line if you want more than the first row:
-    break;
-  }
+    // Click image icon if exists
+    const imgIcon = await page.$('.modal.fade.in .fa-picture-o, #mdModal.in .fa-picture-o');
+    if (imgIcon) {
+      await imgIcon.click();
+      await new Promise(resolve => setTimeout(resolve, 700));
+    }
 
-  await browser.close();
-  console.log('Browser closed, returning results');
-  res.status(200).json({ records: results });
-};
+    // Get image URL and download
+    let imageUrl = '';
+    let imageFile = '';
+    const bigImg = await page.$('.modal.fade.in img, #mdModal.in img');
+    if (bigImg) {
+      imageUrl = await bigImg.evaluate(img => img.src);
+      console.log(`Extracted image URL for ${columns[1]} (page ${pageNum}, row ${i + 1}):`, imageUrl);
+
+      if (imageUrl) {
+        try {
+          const imgRes = await fetch(imageUrl);
+          imageFile = `images/item_${columns[1]}.jpg`;
+          fs.writeFileSync(imageFile, Buffer.from(await imgRes.arrayBuffer()));
+          if (fs.existsSync(imageFile)) {
+            console.log('Image saved to:', imageFile);
+          } else {
+            console.error('File write failed.');
+          }
+        } catch (e) {
+          imageFile = '';
+          console.error('Image download failed:', e);
+        }
+      }
+    } else {
+      console.log('No image found in modal.');
+    }
+
+    // Try to close modal gracefully; fallback to key & aggressive strategies
+    const closeBtn = await page.$('.modal.fade.in .close, #mdModal.in .close');
+    if (closeBtn) {
+      try {
+        await closeBtn.click();
+        await new Promise(resolve => setTimeout(resolve, 700));
+      } catch (e) {
+        console.warn('Modal close click failed, trying Escape:', e.message);
+        await page.keyboard.press('Escape');
+        await new Promise(resolve => setTimeout(resolve, 700));
+      }
+    } else {
+      console.warn('No close button found, sending Escape key.');
+      await page.keyboard.press('Escape');
+      await new Promise(resolve => setTimeout(resolve, 700));
+    }
+
+    // Aggressive close logic
+    const couldClose = await extraAggressiveModalClose(page, i, pageNum);
+    if (!couldClose) continue;
+
+    // Store into DB
+    insertStmt.run({
+      date: columns[0],
+      item_id: columns[1],
+      qty: columns[2],
+      description: columns[3],
+      shipper: columns[4],
+      client: columns[5],
+      client_url: clientUrl,
+      item_num: columns[6],
+      po_num: columns[7],
+      image_url: imageUrl,
+      image_file: imageFile
+    });
+
+    // Output for verification
+    console.log({
+      date: columns[0],
+      item_id: columns[1],
+      qty: columns[2],
+      description: columns[3],
+      shipper: columns[4],
+      client: columns[5],
+      client_url: clientUrl,
+      item_num: columns[6],
+      po_num: columns[7],
+      image_url: imageUrl,
+      image_file: imageFile,
+      image_exists: imageFile && fs.existsSync(imageFile)
+    });
+  }
+}
+
+(async () => {
+  try {
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-blink-features=AutomationControlled'
+      ]
+    });
+
+    const page = await browser.newPage();
+    await page.setUserAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+    );
+    await page.setExtraHTTPHeaders({ 'Accept-Language': 'en-US,en;q=0.9' });
+    await page.setViewport({ width: 3840, height: 2160 });
+
+    // LOGIN
+    await page.goto('https://www.colwright.com/login/', { waitUntil: 'networkidle2' });
+    await page.waitForSelector('iframe');
+    let frameHandle = await page.$('iframe');
+    let frame = frameHandle ? await frameHandle.contentFrame() : null;
+    if (!frame) throw new Error("Iframe not found on initial page load");
+
+    await frame.waitForSelector('input#username', { timeout: 5000 });
+    await frame.type('input#username', process.env.EMAIL || 'YOUR_EMAIL', { delay: 120 });
+    await frame.waitForSelector('input#password', { timeout: 5000 });
+    await frame.type('input#password', process.env.PASSWORD || 'YOUR_PASSWORD', { delay: 160 });
+
+    const loginButton = await frame.$('button[type="submit"], input[type="submit"]');
+    if (loginButton) {
+      await loginButton.click();
+      console.log("Clicked login button.");
+    } else {
+      await frame.focus('input#password');
+      await page.keyboard.press('Enter');
+      console.log("Pressed Enter to submit login.");
+    }
+    await new Promise(resolve => setTimeout(resolve, 3500));
+
+    // --- SCRAPE ONLY PAGE 2 WITH 500 ITEMS ---
+    await page.goto('https://www.colwright.com/inventory?items=500&page=2', { waitUntil: 'networkidle2' });
+
+    console.log('Now at:', page.url());
+    if (page.url().includes('login')) {
+      console.error('Login failed or session expired! Aborting script.');
+      process.exit(1);
+    }
+    const pageText = await page.content();
+    console.log('First ~500 chars:', pageText.slice(0, 500));
+
+    await scrapePage(page, 2);
+
+    await browser.close();
+    db.close();
+    console.log("Done.");
+  } catch (error) {
+    console.error("An error occurred:", error);
+    db.close();
+  }
+})();

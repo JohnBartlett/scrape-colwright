@@ -1,16 +1,26 @@
 {
   "name": "scrape-colwright",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Inventory scraper and gallery for ColWright.com",
+  "main": "scraper.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node scraper.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@sparticuz/chromium": "^138.0.2",
-    "playwright-core": "^1.54.1"
-  }
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.4",
+    "better-sqlite3": "^9.4.0",
+    "node-fetch": "^3.3.2"
+  },
+  "type": "module",
+  "author": "Your Name",
+  "license": "MIT"
 }
+{
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/johnbartlett/scrape-colwright.git"
+  },
