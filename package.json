@@ -2,25 +2,27 @@
   "name": "scrape-colwright",
   "version": "1.0.0",
   "description": "Inventory scraper and gallery for ColWright.com",
-  "main": "scraper.js",
+  "main": "api/scraper.js",
   "scripts": {
-    "start": "node scraper.js"
+    "start": "node api/scraper.js"
   },
   "dependencies": {
+    "better-sqlite3": "^9.6.0",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^24.15.0",
     "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.4",
-    "better-sqlite3": "^9.4.0",
-    "node-fetch": "^3.3.2"
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   },
   "type": "module",
-  "author": "Your Name",
-  "license": "MIT"
-}
-{
+  "author": "John Bartlett",
+  "license": "MIT",
   "engines": {
     "node": ">=14.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnbartlett/scrape-colwright.git"
-  },
+    "url": "https://github.com/JohnBartlett/scrape-colwright.git"
+  }
+}

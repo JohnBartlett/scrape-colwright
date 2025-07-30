@@ -10,6 +10,15 @@
       padding: 0;
       color: #253050;
     }
+    #table-loader {
+      display: none;
+      font-size: 1.13em;
+      color: #3861b4;
+      padding: 10px;
+      text-align: center;
+      background: #e8eefa;
+      border-bottom: 1px solid #b8c7e9;
+    }
     h1 {
       color: #3561b4;
       font-size: 2.15rem;
@@ -17,6 +26,30 @@
       text-align: center;
       margin-top: 36px;
       margin-bottom: 20px;
+    }
+    #topbar-link {
+      width: 96%;
+      margin: 0 auto 0 auto;
+      text-align: right;
+      padding-top: 18px;
+      padding-bottom: 8px;
+      max-width: 1160px;
+    }
+    #topbar-link a {
+      font-size: 1.10em;
+      color: #3262c6;
+      padding: 8px 18px;
+      border-radius: 7px;
+      background: #e5eeff;
+      font-weight: 500;
+      text-decoration: none;
+      box-shadow: 0 1px 5px #4970e00c;
+      transition: background 0.2s, color 0.2s;
+    }
+    #topbar-link a:hover {
+      background: #bed8ff;
+      color: #183678;
+      text-decoration: underline;
     }
     #search-container {
       text-align: center;
@@ -48,15 +81,21 @@
     }
     th, td {
       border: 1px solid #e0e7f1;
-      padding: 8px 14px;
+      padding: 7px 10px;
       text-align: left;
       font-size: 1.02em;
+      vertical-align: middle;
     }
     th {
       background-color: #ecf4fd;
       color: #2d4fa6;
       font-weight: 600;
-      font-size: 1.06em;
+      font-size: 1em;
+      white-space: nowrap;
+      height: 36px;
+      padding-top: 4px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #b8c7e9;
     }
     tr.data-row:nth-child(even) td {
       background: #f7faff;
@@ -64,11 +103,30 @@
     tr.data-row:hover td {
       background: #eaeefc;
     }
-    img {
-      max-width: 110px;
-      max-height: 78px;
+    .img-thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      min-width: 52px;
+      min-height: 32px;
+    }
+    .img-thumb {
+      max-width: 54px;
+      max-height: 44px;
+      border-radius: 4px;
+      background: #f8fafc;
+      box-shadow: 0 1px 4px #26395911;
+      margin-top: 2px;
+      margin-bottom: 2px;
+      display: block;
+    }
+    .img-single {
+      max-width: 100px;
+      max-height: 68px;
       border-radius: 7px;
       box-shadow: 0 1px 4px #4068db19;
+      margin-top: 2px;
+      margin-bottom: 2px;
     }
     a {
       color: #3961cf;
@@ -76,14 +134,29 @@
       transition: color 0.16s;
     }
     a:hover { text-decoration: underline; color: #2747b8; }
+    .sort-arrow {
+      cursor: pointer;
+      font-size: 1em;
+      margin-left: 2px;
+      color: #5471b7;
+      user-select: none;
+      vertical-align: middle;
+    }
+    .sort-arrow.sorted { color: #21397a; }
     @media (max-width: 580px) {
       table { font-size: .90em; }
       #item-search { width: 99vw; }
       th, td { padding: 5px 4px; }
+      #topbar-link { width: 99vw; min-width: unset; max-width: unset; padding-top: 10px;}
+      #topbar-link a { padding: 6px 14px; font-size: 1em;}
     }
   </style>
 </head>
 <body>
+  <div id="table-loader">Sorting…</div>
+  <div id="topbar-link">
+    <a href="review.html" title="Go to Review Workflow">→ Review Workflow</a>
+  </div>
   <h1>Inventory Items</h1>
   <div id="search-container">
     <input id="item-search" type="text" placeholder="Search items by any info..." autocomplete="off">
@@ -91,55 +164,146 @@
   <table id="inventory">
     <thead>
       <tr>
-        <th>Date</th>
-        <th>ItemID</th>
-        <th>Qty</th>
-        <th>Description</th>
-        <th>Shipper</th>
-        <th>Client</th>
-        <th>Item#</th>
-        <th>PO#</th>
+        <th>ItemID
+          <span class="sort-arrow" data-col="item_id" data-dir="asc">&#9650;</span>
+          <span class="sort-arrow" data-col="item_id" data-dir="desc">&#9660;</span>
+        </th>
+        <th>Type
+          <span class="sort-arrow" data-col="type" data-dir="asc">&#9650;</span>
+          <span class="sort-arrow" data-col="type" data-dir="desc">&#9660;</span>
+        </th>
+        <th>Disposition
+          <span class="sort-arrow" data-col="disposition" data-dir="asc">&#9650;</span>
+          <span class="sort-arrow" data-col="disposition" data-dir="desc">&#9660;</span>
+        </th>
+        <th>Review
+          <span class="sort-arrow" data-col="review" data-dir="asc">&#9650;</span>
+          <span class="sort-arrow" data-col="review" data-dir="desc">&#9660;</span>
+        </th>
+        <th>Description
+          <span class="sort-arrow" data-col="description" data-dir="asc">&#9650;</span>
+          <span class="sort-arrow" data-col="description" data-dir="desc">&#9660;</span>
+        </th>
+        <th>Client
+          <span class="sort-arrow" data-col="client" data-dir="asc">&#9650;</span>
+          <span class="sort-arrow" data-col="client" data-dir="desc">&#9660;</span>
+        </th>
+        <th>Notes
+          <span class="sort-arrow" data-col="comments" data-dir="asc">&#9650;</span>
+          <span class="sort-arrow" data-col="comments" data-dir="desc">&#9660;</span>
+        </th>
         <th>Image</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
   <script>
-    // Render the table
-    fetch('/api/items')
-      .then(response => response.json())
-      .then(data => {
-        const tbody = document.querySelector('#inventory tbody');
-        data.forEach(row => {
-          tbody.innerHTML += `<tr class="data-row">
-            <td>${row.date || ''}</td>
-            <td>${row.item_id || ''}</td>
-            <td>${row.qty || ''}</td>
-            <td>${row.description || ''}</td>
-            <td>${row.shipper || ''}</td>
-            <td>${row.client_url ? `<a href="${row.client_url}" target="_blank">${row.client||''}</a>` : (row.client||'')}</td>
-            <td>${row.item_num || ''}</td>
-            <td>${row.po_num || ''}</td>
-            <td>${row.image_file && row.image_file !== '' ?
-                `<a href="/${row.image_file}" target="_blank">
-                   <img src="/${row.image_file}" alt="item image"></a>`
-                :
-                'No image'
-              }
-            </td>
-          </tr>`;
-        });
+    let items = [];
+
+    function html(s) {
+      return (s==null ? "" : (""+s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c])));
+    }
+
+    function renderImages(row) {
+      if (Array.isArray(row.image_files) && row.image_files.length) {
+        return '<div class="img-thumbs">' +
+          row.image_files.map(img =>
+            `<a href="/${html(img)}" target="_blank" title="View image">
+              <img src="/${html(img)}" class="img-thumb" alt="item image">
+            </a>`
+          ).join('') + '</div>';
+      }
+      if (row.image_file && row.image_file !== '') {
+        return `<a href="/${html(row.image_file)}" target="_blank">
+                  <img src="/${html(row.image_file)}" class="img-single" alt="item image"></a>`;
+      }
+      return `<span style="color:#888;">No image</span>`;
+    }
+
+    function showLoader(text = "Sorting…") {
+      const loader = document.getElementById('table-loader');
+      loader.innerText = text;
+      loader.style.display = '';
+    }
+    function hideLoader() {
+      document.getElementById('table-loader').style.display = 'none';
+    }
+
+    // Loader will always be visible for at least 180ms, which avoids blink/disappear issue.
+    function sortTableBy(col, dir) {
+      showLoader();
+      requestAnimationFrame(() => { // Ensure browser does a paint before continuing
+        setTimeout(() => {
+          items.sort((a, b) => {
+            const aValue = (a[col] || '').toString().toLowerCase();
+            const bValue = (b[col] || '').toString().toLowerCase();
+            if (aValue < bValue) return dir === 'asc' ? -1 : 1;
+            if (aValue > bValue) return dir === 'asc' ? 1 : -1;
+            return 0;
+          });
+          renderTable();
+          hideLoader();
+        }, 180);
+      });
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector('#inventory tbody');
+      tbody.innerHTML = '';
+      items.forEach(row => {
+        tbody.innerHTML += `<tr class="data-row">
+          <td>
+            <a href="review.html?item=${encodeURIComponent(row.item_id || '')}" target="_blank" title="Review this item">${html(row.item_id || '')}</a>
+          </td>
+          <td>${html(row.type || '')}</td>
+          <td>${html(row.disposition || '')}</td>
+          <td>${html(row.review || '')}</td>
+          <td>${html(row.description || '')}</td>
+          <td>${row.client_url ? `<a href="${html(row.client_url)}" target="_blank">${html(row.client||'')}</a>` : html(row.client||'')}</td>
+          <td>${html(row.comments || '')}</td>
+          <td>${renderImages(row)}</td>
+        </tr>`;
       });
 
-    // Search filter logic
-    document.getElementById('item-search').addEventListener('input', function() {
-      const q = this.value.trim().toLowerCase();
-      document.querySelectorAll("#inventory tbody tr.data-row").forEach(tr => {
-        tr.style.display = Array.from(tr.children).some(td =>
-            td.textContent.toLowerCase().includes(q)
-        ) ? "" : "none";
+      // Attach sort events after every render
+      document.querySelectorAll('.sort-arrow').forEach(el => {
+        el.onclick = function() {
+          document.querySelectorAll('.sort-arrow').forEach(e => e.classList.remove('sorted'));
+          this.classList.add('sorted');
+          const col = this.getAttribute('data-col');
+          const dir = this.getAttribute('data-dir');
+          sortTableBy(col, dir);
+        };
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('/api/items').then(r=>r.json()).then(data=>{
+        items = data;
+        renderTable();
+      });
+
+      // SEARCH filter logic and Enter handler
+      const searchInput = document.getElementById('item-search');
+      function handleSearchInput() {
+        const q = searchInput.value.trim().toLowerCase();
+        document.querySelectorAll("#inventory tbody tr.data-row").forEach(tr => {
+          tr.style.display = Array.from(tr.children).some(td =>
+              td.textContent.toLowerCase().includes(q)
+          ) ? "" : "none";
+        });
+      }
+      searchInput.addEventListener('input', handleSearchInput);
+      searchInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          handleSearchInput();
+        }
       });
     });
   </script>
 </body>
 </html>
+<!DOCTYPE html>

@@ -12,29 +12,31 @@
     }
     h1 {
       color: #3366bb;
-      margin-top: 30px;
+      margin-top: 18px;
+      margin-bottom: 4px;
       letter-spacing: 2px;
       font-size: 2rem;
+      text-align: center;
     }
     .search-box {
       text-align: center;
-      margin-bottom: 18px;
-      margin-top: 18px;
+      margin-bottom: 10px;
+      margin-top: 10px;
     }
     #review-search {
-      width: 210px;
-      padding: 7px 14px;
+      width: 200px;
+      padding: 6px 12px;
       border: 1px solid #b4c4e0;
       border-radius: 7px;
       font-size: 1em;
       margin-right: 8px;
     }
     #review-search-btn {
-      padding: 7px 22px;
+      padding: 6px 18px;
       border: none;
       background: #4e77de;
       color: #fff;
-      border-radius: 7px;
+      border-radius: 6px;
       font-size: 1em;
       cursor: pointer;
       transition: background 0.18s;
@@ -42,18 +44,93 @@
     #review-search-btn:hover {
       background: #2848b6;
     }
-    #main-card {
+    #review-layout {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
       background: #fff;
-      max-width: 520px;
-      margin: 32px auto 0 auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 24px #26395911;
-      padding: 32px 32px 16px 32px;
+      max-width: 98vw;
+      min-width: 220px;
+      min-height: 440px;
+      margin: 10px auto 0 auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px #26395918;
+      padding: 14px 1vw;
+      gap: 28px;
+    }
+    #img-section {
+      flex: 0 0 auto;
+      min-width: 240px;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
       text-align: center;
     }
+    #desc {
+      font-size: 1.17em;
+      color: #355;
+      margin-bottom: 2px;
+      margin-top: 0;
+      font-weight: 500;
+      max-width: 650px;
+      letter-spacing: .2px;
+      text-align: center;
+      padding: 0 0 7px 0;
+    }
+    #item-img {
+      border-radius: 12px;
+      max-width: 520px;
+      max-height: 800px;
+      width: 45vw;
+      min-width: 120px;
+      object-fit: contain;
+      box-shadow: 0 3px 18px #334dbe1a;
+      background: #f6faff;
+      margin-bottom: 12px;
+      margin-top: 0;
+    }
+    #comments-box {
+      width: 100%;
+      padding-left: 2px;
+      padding-right: 2px;
+    }
+    #comments {
+      font-family: inherit;
+      width: 100%;
+      padding: 10px;
+      font-size: 1.08em;
+      border: 1px solid #ced6e3;
+      border-radius: 7px;
+      margin: 4px 0 2px 0;
+      min-height: 56px;
+      background: #f6f8fa;
+      resize: vertical;
+      transition: border 0.2s;
+    }
+    #comments:focus {
+      border: 1.5px solid #5471b7;
+      outline: none;
+      background: #e9f0fb;
+    }
+    #right-section {
+      flex: 1 1 0;
+      min-width: 180px;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.6em;
+      margin-left: auto;
+      margin-right: 0;
+    }
     #nav {
-      margin: 1.2em 0 1.2em 0;
-      font-size: 1.1em;
+      margin-bottom: 1em;
+      font-size: 1em;
+      text-align: right;
+      width: 100%;
     }
     #nav button {
       background: #e3eaff;
@@ -61,12 +138,13 @@
       border: none;
       border-radius: 5px;
       font-size: 1.25em;
-      margin: 0 8px;
+      margin: 0 7px 0 0;
       width: 40px;
       height: 40px;
       cursor: pointer;
       transition: background 0.2s;
     }
+    #nav button:last-child { margin-right: 0; }
     #nav button:hover {
       background: #b3c9fa;
     }
@@ -75,72 +153,45 @@
       font-size: 1.08em;
       font-weight: 500;
     }
-    #item-img {
-      border-radius: 10px;
-      max-width: 96%;
-      box-shadow: 0 2px 10px #3764a340;
-      margin-bottom: 25px;
-    }
-    #desc {
-      font-size: 1.02em;
-      margin-bottom: 8px;
-      color: #446;
-    }
     form {
-      margin: 0 auto;
-      text-align: left;
-      display: inline-block;
-      width: 90%;
-      max-width: 420px;
-    }
-    textarea {
-      font-family: inherit;
+      margin: 0;
+      text-align: right;
       width: 100%;
-      padding: 10px;
-      font-size: 1.03em;
-      border: 1px solid #ced6e3;
-      border-radius: 7px;
-      margin: 12px 0 20px 0;
-      min-height: 66px;
-      background: #f6f8fa;
-      resize: vertical;
-      transition: border 0.2s;
-    }
-    textarea:focus {
-      border: 1.5px solid #5471b7;
-      outline: none;
-      background: #e9f0fb;
+      max-width: 340px;
     }
     .group {
-      margin-bottom: 18px;
-      padding: 7px 0;
-      border-radius: 6px;
+      margin-bottom: 15px;
+      padding: 5px 0;
+      border-radius: 5px;
       background: #f8fafc;
+      text-align: right;
     }
     .group span {
       display: block;
-      font-size: 1.04em;
+      font-size: 1.06em;
       font-weight: 600;
       color: #3366bb;
-      margin-bottom: 5px;
+      margin-bottom: 2px;
     }
     .group label {
-      margin-right: 1.2em;
-      font-weight: 400;
-      font-size: .99em;
+      margin-right: 0.7em;
+      font-weight: 460;
+      font-size: 1em;
       color: #404060;
       cursor: pointer;
+      white-space: nowrap;
     }
+    .group label:last-child { margin-right: 0; }
     #item-form button[type=submit] {
       background: #4d89e3;
       color: #fff;
-      padding: 8px 30px;
+      padding: 7px 28px;
       border: none;
       border-radius: 6px;
       font-size: 1.08em;
       cursor: pointer;
-      margin: 15px auto 0 auto;
-      display: block;
+      margin: 10px 0 0 0;
+      display: inline-block;
       transition: background 0.2s;
       box-shadow: 0 1px 6px #284d9a15;
     }
@@ -148,16 +199,24 @@
       background: #2758b6;
     }
     #status {
-      margin: 18px auto 0 auto;
+      margin: 10px 0 0 0;
       color: #369853;
       font-weight: 500;
-      text-align: center;
+      text-align: right;
       min-height: 1em;
     }
+    @media (max-width: 950px) {
+      #review-layout { flex-direction: column; padding: 8px 0vw 6px 0vw; max-width: 100vw;}
+      #img-section, #right-section { max-width: 99vw; width: 100%; }
+      #img-section { align-items: center; }
+      .group, form, #nav, #status { text-align: center !important; }
+      #comments { min-width: 0; }
+      #item-img { max-width: 94vw; }
+      #desc { max-width: 94vw; }
+      #right-section { max-width: unset; }
+    }
     @media (max-width: 540px) {
-      #main-card { padding: 18px 2vw 6px 2vw; }
-      form { width: 100%; }
-      .search-box { margin-top: 8px; }
+      #review-layout { padding: 4px 0vw; }
     }
   </style>
 </head>
@@ -167,39 +226,52 @@
     <input id="review-search" type="text" placeholder="Jump/search by description, client...">
     <button type="button" id="review-search-btn">Find</button>
   </div>
-  <div id="main-card">
-    <div id="nav">
-      <button id="prev" type="button">←</button>
-      <span id="counter"></span>
-      <button id="next" type="button">→</button>
+  <div id="review-layout">
+    <div id="img-section">
+      <div id="desc"></div>
+      <img id="item-img" src="" alt="Item Image"/>
+      <div id="comments-box">
+        <textarea id="comments" placeholder="Add comments..."></textarea>
+      </div>
     </div>
-    <img id="item-img" src="" alt="Item Image"/>
-    <div id="desc"></div>
-    <form id="item-form" autocomplete="off">
-      <textarea id="comments" placeholder="Add comments..."></textarea>
-      <div class="group">
-        <span>Type</span>
-        <label><input type="checkbox" name="type" value="Furniture" id="type-furniture"> Furniture</label>
-        <label><input type="checkbox" name="type" value="Chair" id="type-chair"> Chair</label>
-        <label><input type="checkbox" name="type" value="Table" id="type-table"> Table</label>
-        <label><input type="checkbox" name="type" value="Art" id="type-art"> Art</label>
-        <label><input type="checkbox" name="type" value="Other" id="type-other"> Other</label>
+    <div id="right-section">
+      <div id="nav">
+        <button id="prev" type="button">←</button>
+        <span id="counter"></span>
+        <button id="next" type="button">→</button>
       </div>
-      <div class="group">
-        <span>Disposition</span>
-        <label><input type="checkbox" name="disposition" value="Sell" id="disposition-sell"> Sell</label>
-        <label><input type="checkbox" name="disposition" value="Donate" id="disposition-donate"> Donate</label>
-        <label><input type="checkbox" name="disposition" value="Toss" id="disposition-toss"> Toss</label>
-      </div>
-      <button type="submit">Save</button>
-    </form>
-    <div id="status"></div>
+      <form id="item-form" autocomplete="off">
+        <div class="group">
+          <span>Type</span>
+          <label><input type="checkbox" name="type" value="Furniture" id="type-furniture"> Furniture</label>
+          <label><input type="checkbox" name="type" value="Art" id="type-art"> Art</label>
+          <label><input type="checkbox" name="type" value="Books" id="type-books"> Books</label>
+          <label><input type="checkbox" name="type" value="Silver" id="type-silver"> Silver</label>
+          <label><input type="checkbox" name="type" value="Other" id="type-other"> Other</label>
+        </div>
+        <div class="group">
+          <span>Disposition</span>
+          <label><input type="checkbox" name="disposition" value="Sell" id="disposition-sell"> Sell</label>
+          <label><input type="checkbox" name="disposition" value="Donate" id="disposition-donate"> Donate</label>
+          <label><input type="checkbox" name="disposition" value="Toss" id="disposition-toss"> Toss</label>
+        </div>
+        <div class="group">
+          <span>Review</span>
+          <label><input type="checkbox" name="review" value="John" id="review-john"> John</label>
+          <label><input type="checkbox" name="review" value="Catharine" id="review-catharine"> Catharine</label>
+          <label><input type="checkbox" name="review" value="Caroline" id="review-caroline"> Caroline</label>
+          <label><input type="checkbox" name="review" value="Colwright" id="review-colwright"> Colwright</label>
+        </div>
+        <button type="submit">Save</button>
+      </form>
+      <div id="status"></div>
+    </div>
   </div>
   <script>
     let items = [];
+    let filtered = [];
     let idx = 0;
 
-    // Checkbox radio group logic
     function singleCheckboxGroup(name) {
       const boxes = Array.from(document.querySelectorAll(`input[name=${name}]`));
       boxes.forEach(box => {
@@ -216,20 +288,21 @@
     });
 
     function show(i) {
-      if (!items.length || !items[i]) {
+      if (!filtered.length || !filtered[i]) {
         document.getElementById('counter').textContent = 'No items';
         document.getElementById('item-img').src = '';
         document.getElementById('desc').textContent = '';
         document.getElementById('comments').value = '';
         document.querySelectorAll('input[name=type]').forEach(cb => cb.checked = false);
         document.querySelectorAll('input[name=disposition]').forEach(cb => cb.checked = false);
+        document.querySelectorAll('input[name=review]').forEach(cb => cb.checked = false);
         document.getElementById('status').textContent = '';
         return;
       }
-      const x = items[i];
-      document.getElementById('counter').textContent = `Item ${i+1} / ${items.length}`;
+      const x = filtered[i];
+      document.getElementById('counter').textContent = `Item ${i+1} / ${filtered.length}`;
       document.getElementById('item-img').src = x.image_file || x.image_url || '';
-      document.getElementById('desc').textContent = (x.description || '') + ' — ' + (x.client || '');
+      document.getElementById('desc').textContent = (x.description || '') + (x.client ? ' — ' + x.client : '');
       document.getElementById('comments').value = x.comments || '';
       document.querySelectorAll('input[name=type]').forEach(cb => {
         cb.checked = (x.type === cb.value);
@@ -237,27 +310,30 @@
       document.querySelectorAll('input[name=disposition]').forEach(cb => {
         cb.checked = (x.disposition === cb.value);
       });
+      document.querySelectorAll('input[name=review]').forEach(cb => {
+        cb.checked = (x.review || '').split(',').includes(cb.value);
+      });
       document.getElementById('status').textContent = '';
     }
 
     function saveCurrent(callback) {
-      if (!items.length) return;
-      const item = items[idx];
+      if (!filtered.length) return;
+      const item = filtered[idx];
       const comments = document.getElementById('comments').value;
-      const type = Array.from(document.querySelectorAll('input[name=type]'))
-        .find(cb => cb.checked)?.value || '';
-      const disposition = Array.from(document.querySelectorAll('input[name=disposition]'))
-        .find(cb => cb.checked)?.value || '';
+      const type = Array.from(document.querySelectorAll('input[name=type]')).find(cb => cb.checked)?.value || '';
+      const disposition = Array.from(document.querySelectorAll('input[name=disposition]')).find(cb => cb.checked)?.value || '';
+      const review = Array.from(document.querySelectorAll('input[name=review]')).filter(cb => cb.checked).map(cb => cb.value).join(',');
       fetch('/api/item/' + item.id, {
         method: "POST",
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({comments, type, disposition}),
+        body: JSON.stringify({comments, type, disposition, review}),
       })
       .then(res => res.json())
       .then(d => {
         item.comments = comments;
         item.type = type;
         item.disposition = disposition;
+        item.review = review;
         document.getElementById('status').textContent = "Saved!";
         if(callback) callback();
       });
@@ -268,35 +344,60 @@
       saveCurrent();
     };
     document.getElementById('next').onclick = function() {
-      if (items.length && idx < items.length-1) {
+      if (filtered.length && idx < filtered.length-1) {
         saveCurrent(() => { idx++; show(idx); });
       }
     };
     document.getElementById('prev').onclick = function() {
-      if (items.length && idx > 0) {
+      if (filtered.length && idx > 0) {
         saveCurrent(() => { idx--; show(idx); });
       }
     };
     document.addEventListener('keydown', function(e) {
-      const el = document.activeElement;
-      if(el && (el.tagName === "TEXTAREA" || (el.tagName === "INPUT" && el.type === "text"))) return;
-      if(e.key === 'ArrowRight') document.getElementById('next').onclick();
-      if(e.key === 'ArrowLeft') document.getElementById('prev').onclick();
-    });
+  const tag = document.activeElement.tagName;
+  if(tag === "TEXTAREA" || (tag === "INPUT" && document.activeElement.type === "text")) return;
 
-    // Search/jump feature
+  // Helper for toggling checkbox by ID
+  function toggleBox(id) {
+    const box = document.getElementById(id);
+    if (box) box.checked = !box.checked;
+  }
+
+  // Type shortcuts
+  if(e.key === 'f') toggleBox('type-furniture');
+  if(e.key === 'a') toggleBox('type-art');
+  if(e.key === 'b') toggleBox('type-books');
+  if(e.key === 'o') toggleBox('type-other');
+  if(e.key === 'v') toggleBox('type-silver');
+  // Disposition shortcuts
+  if(e.key === 's') toggleBox('disposition-sell');
+  if(e.key === 'd') toggleBox('disposition-donate');
+  if(e.key === 't') toggleBox('disposition-toss');
+  // Arrow navigation
+  if(e.key === 'ArrowRight') document.getElementById('next').onclick();
+  if(e.key === 'ArrowLeft') document.getElementById('prev').onclick();
+});
+
+    function searchAndUpdateList(q) {
+      if (!q) {
+        filtered = items;
+      } else {
+        filtered = items.filter(x =>
+          (x.description||'').toLowerCase().includes(q) ||
+          (x.client||'').toLowerCase().includes(q) ||
+          (x.id+"").toLowerCase().includes(q)
+        );
+      }
+    }
     document.getElementById('review-search-btn').onclick = function() {
       const q = document.getElementById('review-search').value.toLowerCase().trim();
-      if (!q) return;
-      const found = items.findIndex(x =>
-        (x.description||'').toLowerCase().includes(q) ||
-        (x.client||'').toLowerCase().includes(q) ||
-        (x.id+"").toLowerCase().includes(q)
-      );
-      if (found > -1) {
-        saveCurrent(() => { idx = found; show(idx); });
-        document.getElementById('status').textContent = "Matched item " + (found+1) + " of " + items.length;
+      searchAndUpdateList(q);
+      idx = 0;
+      if (filtered.length > 0) {
+        show(idx);
+        document.getElementById('status').textContent = "Showing " + filtered.length + " result(s)";
       } else {
+        show(-1);
         document.getElementById('status').textContent = "No match found.";
       }
     };
@@ -304,9 +405,9 @@
       if (e.key === 'Enter') document.getElementById('review-search-btn').onclick();
     });
 
-    // Load items on page load
     fetch('/api/items').then(r=>r.json()).then(data=>{
       items = data;
+      filtered = items;
       idx = 0;
       show(idx);
     });
