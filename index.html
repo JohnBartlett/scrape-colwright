@@ -53,7 +53,33 @@
     }
     #search-container {
       text-align: center;
-      margin-bottom: 22px;
+      margin-bottom: 12px;
+    }
+    #type-filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 13px;
+    }
+    .type-filter-label {
+      font-size: 1em;
+      padding: 5px 10px;
+      border-radius: 7px;
+      background: #e8eefa;
+      border: 1px solid #b8c7e9;
+      color: #253050;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 3px;
+      transition: background 0.18s;
+    }
+    .type-filter-label input[type="checkbox"] {
+      accent-color: #4871e8;
+      margin-right: 3px;
+    }
+    .type-filter-label:hover {
+      background: #bed8ff;
+      color: #183678;
     }
     #item-search {
       width: 390px;
@@ -161,6 +187,7 @@
   <div id="search-container">
     <input id="item-search" type="text" placeholder="Search items by any info..." autocomplete="off">
   </div>
+  <div id="type-filters"></div>
   <table id="inventory">
     <thead>
       <tr>
@@ -199,6 +226,9 @@
   </table>
   <script>
     let items = [];
+    let typeSet = new Set();
+    let filteredTypes = new Set();
+    let filterNoType = false;
 
     function html(s) {
       return (s==null ? "" : (""+s).replace(/[&<>"']/g, c => ({
@@ -249,10 +279,41 @@
       });
     }
 
+    function getActiveTypeFilters() {
+      // If none checked, treat as "show all"
+      const checked = Array.from(document.querySelectorAll('input.type-filter[type="checkbox"]:checked'));
+      const checkedTypes = new Set();
+      let activeNoType = false;
+      checked.forEach(input => {
+        if (input.value === '__no_type__') activeNoType = true;
+        else checkedTypes.add(input.value);
+      });
+      return { checkedTypes, activeNoType, showAll: checked.length === 0 };
+    }
+
     function renderTable() {
       const tbody = document.querySelector('#inventory tbody');
       tbody.innerHTML = '';
+      const searchInput = document.getElementById('item-search');
+      const query = searchInput.value.trim().toLowerCase();
+      const { checkedTypes, activeNoType, showAll } = getActiveTypeFilters();
+
       items.forEach(row => {
+        // Search filter
+        if (query) {
+          // Fuzzy match across all visible cells
+          const rowText = [
+            row.item_id, row.type, row.disposition, row.review,
+            row.description, row.client, row.comments
+          ].map(x => (x||'').toLowerCase()).join(' || ');
+          if (!rowText.includes(query)) return;
+        }
+        // Type filter
+        if (!showAll) {
+          const typeVal = (row.type||'').trim();
+          const noType = !typeVal;
+          if (!((checkedTypes.has(typeVal)) || (activeNoType && noType))) return;
+        }
         tbody.innerHTML += `<tr class="data-row">
           <td>
             <a href="review.html?item=${encodeURIComponent(row.item_id || '')}" target="_blank" title="Review this item">${html(row.item_id || '')}</a>
@@ -279,30 +340,59 @@
       });
     }
 
+    function renderTypeFilters() {
+      const typeFiltersDiv = document.getElementById('type-filters');
+      typeFiltersDiv.innerHTML = ''; // Clear
+
+      // Sorted unique types (ignore empty/undefined for now)
+      const sortedTypes = Array.from(typeSet).filter(t => t).sort((a,b) => a.localeCompare(b));
+      // Checkbox for each type
+      sortedTypes.forEach(type => {
+        const label = document.createElement('label');
+        label.className = 'type-filter-label';
+        label.innerHTML = `<input class="type-filter" type="checkbox" value="${html(type)}"> ${html(type)}`;
+        typeFiltersDiv.appendChild(label);
+      });
+      // Checkbox for "No Type"
+      const labelNoType = document.createElement('label');
+      labelNoType.className = 'type-filter-label';
+      labelNoType.innerHTML = `<input class="type-filter" type="checkbox" value="__no_type__"> No Type`;
+      typeFiltersDiv.appendChild(labelNoType);
+
+      // Attach change handler:
+      typeFiltersDiv.querySelectorAll('.type-filter').forEach(cb => {
+        cb.addEventListener('change', renderTable);
+      });
+    }
+
+    // On page load:
     document.addEventListener('DOMContentLoaded', () => {
       fetch('/api/items').then(r=>r.json()).then(data=>{
         items = data;
+        // Compute set of unique types
+        typeSet.clear();
+        items.forEach(row => {
+          const tval = (row.type||'').trim();
+          if (tval) typeSet.add(tval);
+        });
+        renderTypeFilters();
         renderTable();
       });
 
       // SEARCH filter logic and Enter handler
       const searchInput = document.getElementById('item-search');
       function handleSearchInput() {
-        const q = searchInput.value.trim().toLowerCase();
-        document.querySelectorAll("#inventory tbody tr.data-row").forEach(tr => {
-          tr.style.display = Array.from(tr.children).some(td =>
-              td.textContent.toLowerCase().includes(q)
-          ) ? "" : "none";
-        });
+        renderTable();
       }
       searchInput.addEventListener('input', handleSearchInput);
       searchInput.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
           event.preventDefault();
-          handleSearchInput();
+          renderTable();
         }
       });
     });
+
   </script>
 </body>
 </html>

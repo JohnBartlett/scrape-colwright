@@ -205,6 +205,46 @@
       text-align: right;
       min-height: 1em;
     }
+    #type-filters-review {
+      text-align: center;
+      margin-bottom: 4px;
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 11px;
+    }
+    .type-filter-label {
+      font-size: 1em;
+      padding: 5px 10px;
+      border-radius: 7px;
+      background: #e8eefa;
+      border: 1px solid #b8c7e9;
+      color: #253050;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 3px;
+      transition: background 0.18s;
+    }
+    .type-filter-label input[type="checkbox"] {
+      accent-color: #4871e8;
+      margin-right: 3px;
+    }
+    .type-filter-label:hover {
+      background: #bed8ff;
+      color: #183678;
+    }
+    #cheatsheet {
+      margin: 16px auto 0 auto;
+      border-radius: 7px;
+      background: #fcfcfc;
+      box-shadow: 0 1px 4px #99bbee18;
+      padding: 11px 18px;
+      color: #234;
+      max-width: 680px;
+      font-size: .98em;
+      line-height: 1.75;
+    }
+    #cheatsheet code { background: #f7f9fa; border-radius: 4px; padding: 1px 5px; }
     @media (max-width: 950px) {
       #review-layout { flex-direction: column; padding: 8px 0vw 6px 0vw; max-width: 100vw;}
       #img-section, #right-section { max-width: 99vw; width: 100%; }
@@ -226,6 +266,7 @@
     <input id="review-search" type="text" placeholder="Jump/search by description, client...">
     <button type="button" id="review-search-btn">Find</button>
   </div>
+  <div id="type-filters-review"></div>
   <div id="review-layout">
     <div id="img-section">
       <div id="desc"></div>
@@ -267,150 +308,188 @@
       <div id="status"></div>
     </div>
   </div>
-  <script>
-    let items = [];
-    let filtered = [];
-    let idx = 0;
+  <div id="cheatsheet">
+    <strong>Keyboard Cheatsheet:</strong><br>
+    <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous<br>
+    <b>Set type by key:</b> 
+    <code>f</code> Furniture, 
+    <code>a</code> Art, 
+    <code>b</code> Books, 
+    <code>v</code> Silver, 
+    <code>o</code> Other, 
+    <code>n</code> No Type (filter)<br>
+    <b>Set disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>t</code> Toss<br>
+    <b>Other:</b> <code>Enter</code> in search field — search &amp; refilter<br>
+    <b>Checkbox filter above:</b> Filters the "Type" of displayed items (may combine with search)
+  </div>
+<script>
+let items = [];
+let filtered = [];
+let idx = 0;
+let typeSet = new Set();
 
-    function singleCheckboxGroup(name) {
-      const boxes = Array.from(document.querySelectorAll(`input[name=${name}]`));
-      boxes.forEach(box => {
-        box.addEventListener('change', function() {
-          if (this.checked) {
-            boxes.forEach(b => { if (b !== this) b.checked = false; });
-          }
-        });
-      });
-    }
-    window.addEventListener("DOMContentLoaded", function() {
-      singleCheckboxGroup("type");
-      singleCheckboxGroup("disposition");
+function singleCheckboxGroup(name) {
+  const boxes = Array.from(document.querySelectorAll(`input[name=${name}]`));
+  boxes.forEach(box => {
+    box.addEventListener('change', function() {
+      if (this.checked) {
+        boxes.forEach(b => { if (b !== this) b.checked = false; });
+      }
     });
+  });
+}
+window.addEventListener("DOMContentLoaded", function() {
+  singleCheckboxGroup("type");
+  singleCheckboxGroup("disposition");
+});
 
-    function show(i) {
-      if (!filtered.length || !filtered[i]) {
-        document.getElementById('counter').textContent = 'No items';
-        document.getElementById('item-img').src = '';
-        document.getElementById('desc').textContent = '';
-        document.getElementById('comments').value = '';
-        document.querySelectorAll('input[name=type]').forEach(cb => cb.checked = false);
-        document.querySelectorAll('input[name=disposition]').forEach(cb => cb.checked = false);
-        document.querySelectorAll('input[name=review]').forEach(cb => cb.checked = false);
-        document.getElementById('status').textContent = '';
-        return;
-      }
-      const x = filtered[i];
-      document.getElementById('counter').textContent = `Item ${i+1} / ${filtered.length}`;
-      document.getElementById('item-img').src = x.image_file || x.image_url || '';
-      document.getElementById('desc').textContent = (x.description || '') + (x.client ? ' — ' + x.client : '');
-      document.getElementById('comments').value = x.comments || '';
-      document.querySelectorAll('input[name=type]').forEach(cb => {
-        cb.checked = (x.type === cb.value);
-      });
-      document.querySelectorAll('input[name=disposition]').forEach(cb => {
-        cb.checked = (x.disposition === cb.value);
-      });
-      document.querySelectorAll('input[name=review]').forEach(cb => {
-        cb.checked = (x.review || '').split(',').includes(cb.value);
-      });
-      document.getElementById('status').textContent = '';
-    }
+function show(i) {
+  if (!filtered.length || !filtered[i]) {
+    document.getElementById('counter').textContent = 'No items';
+    document.getElementById('item-img').src = '';
+    document.getElementById('desc').textContent = '';
+    document.getElementById('comments').value = '';
+    document.querySelectorAll('input[name=type]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('input[name=disposition]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('input[name=review]').forEach(cb => cb.checked = false);
+    document.getElementById('status').textContent = '';
+    return;
+  }
+  const x = filtered[i];
+  document.getElementById('counter').textContent = `Item ${i+1} / ${filtered.length}`;
+  document.getElementById('item-img').src = x.image_file || x.image_url || '';
+  document.getElementById('desc').textContent = (x.description || '') + (x.client ? ' — ' + x.client : '');
+  document.getElementById('comments').value = x.comments || '';
+  document.querySelectorAll('input[name=type]').forEach(cb => {
+    cb.checked = (x.type === cb.value);
+  });
+  document.querySelectorAll('input[name=disposition]').forEach(cb => {
+    cb.checked = (x.disposition === cb.value);
+  });
+  document.querySelectorAll('input[name=review]').forEach(cb => {
+    cb.checked = (x.review || '').split(',').includes(cb.value);
+  });
+  document.getElementById('status').textContent = '';
+}
 
-    function saveCurrent(callback) {
-      if (!filtered.length) return;
-      const item = filtered[idx];
-      const comments = document.getElementById('comments').value;
-      const type = Array.from(document.querySelectorAll('input[name=type]')).find(cb => cb.checked)?.value || '';
-      const disposition = Array.from(document.querySelectorAll('input[name=disposition]')).find(cb => cb.checked)?.value || '';
-      const review = Array.from(document.querySelectorAll('input[name=review]')).filter(cb => cb.checked).map(cb => cb.value).join(',');
-      fetch('/api/item/' + item.id, {
-        method: "POST",
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({comments, type, disposition, review}),
-      })
-      .then(res => res.json())
-      .then(d => {
-        item.comments = comments;
-        item.type = type;
-        item.disposition = disposition;
-        item.review = review;
-        document.getElementById('status').textContent = "Saved!";
-        if(callback) callback();
-      });
-    }
+function saveCurrent(callback) {
+  if (!filtered.length) return;
+  const item = filtered[idx];
+  const comments = document.getElementById('comments').value;
+  const type = Array.from(document.querySelectorAll('input[name=type]')).find(cb => cb.checked)?.value || '';
+  const disposition = Array.from(document.querySelectorAll('input[name=disposition]')).find(cb => cb.checked)?.value || '';
+  const review = Array.from(document.querySelectorAll('input[name=review]')).filter(cb => cb.checked).map(cb => cb.value).join(',');
+  fetch('/api/item/' + item.id, {
+    method: "POST",
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({comments, type, disposition, review}),
+  })
+  .then(res => res.json())
+  .then(d => {
+    item.comments = comments;
+    item.type = type;
+    item.disposition = disposition;
+    item.review = review;
+    document.getElementById('status').textContent = "Saved!";
+    if(callback) callback();
+  });
+}
+document.getElementById('item-form').onsubmit = function(e) {
+  e.preventDefault();
+  saveCurrent();
+};
+document.getElementById('next').onclick = function() {
+  if (filtered.length && idx < filtered.length-1) {
+    saveCurrent(() => { idx++; show(idx); });
+  }
+};
+document.getElementById('prev').onclick = function() {
+  if (filtered.length && idx > 0) {
+    saveCurrent(() => { idx--; show(idx); });
+  }
+};
 
-    document.getElementById('item-form').onsubmit = function(e) {
-      e.preventDefault();
-      saveCurrent();
-    };
-    document.getElementById('next').onclick = function() {
-      if (filtered.length && idx < filtered.length-1) {
-        saveCurrent(() => { idx++; show(idx); });
-      }
-    };
-    document.getElementById('prev').onclick = function() {
-      if (filtered.length && idx > 0) {
-        saveCurrent(() => { idx--; show(idx); });
-      }
-    };
-    document.addEventListener('keydown', function(e) {
+function getCheckedTypes() {
+  const checked = Array.from(document.querySelectorAll('input.type-filter[type=checkbox]:checked'));
+  const types = checked.map(cb => cb.value);
+  return types;
+}
+
+document.addEventListener('keydown', function(e) {
   const tag = document.activeElement.tagName;
   if(tag === "TEXTAREA" || (tag === "INPUT" && document.activeElement.type === "text")) return;
 
-  // Helper for toggling checkbox by ID
-  function toggleBox(id) {
-    const box = document.getElementById(id);
-    if (box) box.checked = !box.checked;
-  }
-
-  // Type shortcuts
+  function toggleBox(id) { const box = document.getElementById(id); if (box) box.checked = !box.checked; }
   if(e.key === 'f') toggleBox('type-furniture');
   if(e.key === 'a') toggleBox('type-art');
   if(e.key === 'b') toggleBox('type-books');
   if(e.key === 'o') toggleBox('type-other');
   if(e.key === 'v') toggleBox('type-silver');
-  // Disposition shortcuts
   if(e.key === 's') toggleBox('disposition-sell');
   if(e.key === 'd') toggleBox('disposition-donate');
   if(e.key === 't') toggleBox('disposition-toss');
-  // Arrow navigation
   if(e.key === 'ArrowRight') document.getElementById('next').onclick();
   if(e.key === 'ArrowLeft') document.getElementById('prev').onclick();
+  if(e.key === 'n' && document.getElementById('typefilter-no-type')) document.getElementById('typefilter-no-type').click();
 });
 
-    function searchAndUpdateList(q) {
-      if (!q) {
-        filtered = items;
+function applyFiltersAndSearch() {
+  const q = (document.getElementById('review-search').value || '').toLowerCase().trim();
+  const checkedTypes = getCheckedTypes();
+  filtered = items.filter(x => {
+    let passesType = true;
+    if(checkedTypes.length > 0) {
+      if (checkedTypes.includes('__no_type__')) {
+        passesType = !x.type || !x.type.trim() || checkedTypes.includes(x.type);
       } else {
-        filtered = items.filter(x =>
-          (x.description||'').toLowerCase().includes(q) ||
-          (x.client||'').toLowerCase().includes(q) ||
-          (x.id+"").toLowerCase().includes(q)
-        );
+        passesType = x.type && checkedTypes.includes(x.type);
       }
     }
-    document.getElementById('review-search-btn').onclick = function() {
-      const q = document.getElementById('review-search').value.toLowerCase().trim();
-      searchAndUpdateList(q);
-      idx = 0;
-      if (filtered.length > 0) {
-        show(idx);
-        document.getElementById('status').textContent = "Showing " + filtered.length + " result(s)";
-      } else {
-        show(-1);
-        document.getElementById('status').textContent = "No match found.";
-      }
-    };
-    document.getElementById('review-search').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') document.getElementById('review-search-btn').onclick();
-    });
+    let passesQ = !q ||
+        (x.description||'').toLowerCase().includes(q) ||
+        (x.client||'').toLowerCase().includes(q) ||
+        (x.id+"").toLowerCase().includes(q);
+    return passesType && passesQ;
+  });
+  idx = 0;
+  show(idx);
+  document.getElementById('status').textContent = filtered.length
+    ? ("Showing " + filtered.length + " result(s)")
+    : "No match found.";
+}
 
-    fetch('/api/items').then(r=>r.json()).then(data=>{
-      items = data;
-      filtered = items;
-      idx = 0;
-      show(idx);
-    });
-  </script>
+document.getElementById('review-search-btn').onclick = applyFiltersAndSearch;
+document.getElementById('review-search').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') applyFiltersAndSearch();
+});
+
+function renderTypeFilters() {
+  typeSet = new Set();
+  items.forEach(x => { if(x.type && x.type.trim()) typeSet.add(x.type.trim()); });
+  const filterDiv = document.getElementById('type-filters-review');
+  filterDiv.innerHTML = '';
+  Array.from(typeSet).sort().forEach(type => {
+    const label = document.createElement('label');
+    label.className = 'type-filter-label';
+    label.innerHTML = `<input class="type-filter" type="checkbox" value="${type}"> ${type}`;
+    filterDiv.appendChild(label);
+  });
+  const labelNoType = document.createElement('label');
+  labelNoType.className = 'type-filter-label';
+  labelNoType.innerHTML = `<input class="type-filter" type="checkbox" value="__no_type__" id="typefilter-no-type"> No Type`;
+  filterDiv.appendChild(labelNoType);
+  filterDiv.querySelectorAll('.type-filter').forEach(cb => {
+    cb.addEventListener('change', applyFiltersAndSearch);
+  });
+}
+
+fetch('/api/items').then(r=>r.json()).then(data=>{
+  items = data;
+  filtered = items.slice();
+  renderTypeFilters();
+  show(idx);
+});
+
+</script>
 </body>
 </html>
