@@ -1,15 +1,22 @@
 {
   "name": "scrape-colwright",
-  "version": "1.0.0",
+  "version": "1.8.0",
   "description": "Inventory scraper and gallery for ColWright.com",
   "main": "api/scraper.js",
   "scripts": {
-    "start": "node api/scraper.js"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "setup": "powershell -ExecutionPolicy Bypass -File setup.ps1",
+    "setup-unix": "./setup.sh",
+    "install-deps": "npm install",
+    "check-status": "netstat -an | findstr :3000",
+    "scraper": "node api/scraper.js"
   },
   "dependencies": {
     "better-sqlite3": "^9.6.0",
     "body-parser": "^2.2.0",
     "express": "^5.1.0",
+    "ngrok": "^5.0.0-beta.2",
     "node-fetch": "^3.3.2",
     "puppeteer": "^24.15.0",
     "puppeteer-extra": "^3.3.6",

@@ -181,9 +181,9 @@
 <body>
   <div id="table-loader">Sorting…</div>
   <div id="topbar-link">
-    <a href="review.html" title="Go to Review Workflow">→ Review Workflow</a>
+    <a href="review.html" target="_blank" title="Go to Review Workflow">→ Review Workflow</a>
   </div>
-  <h1>Inventory Items</h1>
+  <h1>Inventory Items <span style="font-size: 0.6em; color: #666; font-weight: normal;">v1.8.0</span></h1>
   <div id="search-container">
     <input id="item-search" type="text" placeholder="Search items by any info..." autocomplete="off">
   </div>
@@ -353,6 +353,15 @@
         label.innerHTML = `<input class="type-filter" type="checkbox" value="${html(type)}"> ${html(type)}`;
         typeFiltersDiv.appendChild(label);
       });
+      
+      // Add hardcoded "Plates" filter if it doesn't exist in the data yet
+      if (!sortedTypes.includes('Plates')) {
+        const labelPlates = document.createElement('label');
+        labelPlates.className = 'type-filter-label';
+        labelPlates.innerHTML = `<input class="type-filter" type="checkbox" value="Plates"> Plates`;
+        typeFiltersDiv.appendChild(labelPlates);
+      }
+      
       // Checkbox for "No Type"
       const labelNoType = document.createElement('label');
       labelNoType.className = 'type-filter-label';

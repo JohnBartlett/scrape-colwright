@@ -80,18 +80,34 @@
       text-align: center;
       padding: 0 0 7px 0;
     }
-    #item-img {
-      border-radius: 12px;
-      max-width: 520px;
-      max-height: 800px;
-      width: 45vw;
-      min-width: 120px;
-      object-fit: contain;
-      box-shadow: 0 3px 18px #334dbe1a;
-      background: #f6faff;
-      margin-bottom: 12px;
-      margin-top: 0;
-    }
+         #item-img {
+       border-radius: 12px;
+       max-width: 520px;
+       max-height: 800px;
+       width: 45vw;
+       min-width: 120px;
+       object-fit: contain;
+       box-shadow: 0 3px 18px #334dbe1a;
+       background: #f6faff;
+       margin-bottom: 12px;
+       margin-top: 0;
+       cursor: pointer;
+       transition: all 0.3s ease;
+     }
+     
+     #item-img:hover {
+       box-shadow: 0 4px 20px #334dbe30;
+       transform: scale(1.02);
+     }
+     
+     #item-img.zoomed {
+       max-width: 1040px;
+       max-height: 1600px;
+       width: 90vw;
+       z-index: 1000;
+       position: relative;
+       box-shadow: 0 8px 32px #334dbe40;
+     }
     #comments-box {
       width: 100%;
       padding-left: 2px;
@@ -261,9 +277,9 @@
   </style>
 </head>
 <body>
-  <h1>Inventory Review</h1>
+  <h1>Inventory Review <span style="font-size: 0.6em; color: #666; font-weight: normal;">v1.8.0</span></h1>
   <div class="search-box">
-    <input id="review-search" type="text" placeholder="Jump/search by description, client...">
+    <input id="review-search" type="text" placeholder="Jump/search by ItemID, description, client...">
     <button type="button" id="review-search-btn">Find</button>
   </div>
   <div id="type-filters-review"></div>
@@ -288,13 +304,18 @@
           <label><input type="checkbox" name="type" value="Art" id="type-art"> Art</label>
           <label><input type="checkbox" name="type" value="Books" id="type-books"> Books</label>
           <label><input type="checkbox" name="type" value="Silver" id="type-silver"> Silver</label>
+          <label><input type="checkbox" name="type" value="Plates" id="type-plates"> Plates</label>
           <label><input type="checkbox" name="type" value="Other" id="type-other"> Other</label>
         </div>
         <div class="group">
           <span>Disposition</span>
           <label><input type="checkbox" name="disposition" value="Sell" id="disposition-sell"> Sell</label>
           <label><input type="checkbox" name="disposition" value="Donate" id="disposition-donate"> Donate</label>
+          <label><input type="checkbox" name="disposition" value="Gift" id="disposition-gift"> Gift</label>
           <label><input type="checkbox" name="disposition" value="Toss" id="disposition-toss"> Toss</label>
+          <div style="margin-top: 8px;">
+            <input type="text" id="disposition-comments" placeholder="Disposition comments..." style="width: 100%; padding: 4px 8px; border: 1px solid #ced6e3; border-radius: 4px; font-size: 0.9em;">
+          </div>
         </div>
         <div class="group">
           <span>Review</span>
@@ -302,6 +323,9 @@
           <label><input type="checkbox" name="review" value="Catharine" id="review-catharine"> Catharine</label>
           <label><input type="checkbox" name="review" value="Caroline" id="review-caroline"> Caroline</label>
           <label><input type="checkbox" name="review" value="Colwright" id="review-colwright"> Colwright</label>
+          <div style="margin-top: 8px;">
+            <input type="text" id="review-comments" placeholder="Review comments..." style="width: 100%; padding: 4px 8px; border: 1px solid #ced6e3; border-radius: 4px; font-size: 0.9em;">
+          </div>
         </div>
         <button type="submit">Save</button>
       </form>
@@ -315,12 +339,14 @@
     <code>f</code> Furniture, 
     <code>a</code> Art, 
     <code>b</code> Books, 
+    <code>p</code> Plates, 
     <code>v</code> Silver, 
     <code>o</code> Other, 
     <code>n</code> No Type (filter)<br>
-    <b>Set disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>t</code> Toss<br>
-    <b>Other:</b> <code>Enter</code> in search field — search &amp; refilter<br>
-    <b>Checkbox filter above:</b> Filters the "Type" of displayed items (may combine with search)
+    <b>Set disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss<br>
+              <b>Other:</b> <code>Enter</code> in search field — search by ItemID, description, client &amp; refilter<br>
+     <b>Image:</b> Click image to zoom in/out (2x size)<br>
+     <b>Checkbox filter above:</b> Filters the "Type" of displayed items (may combine with search)
   </div>
 <script>
 let items = [];
@@ -341,6 +367,12 @@ function singleCheckboxGroup(name) {
 window.addEventListener("DOMContentLoaded", function() {
   singleCheckboxGroup("type");
   singleCheckboxGroup("disposition");
+  
+  // Add click-to-zoom functionality for item image
+  const itemImg = document.getElementById('item-img');
+  itemImg.addEventListener('click', function() {
+    this.classList.toggle('zoomed');
+  });
 });
 
 function show(i) {
@@ -349,6 +381,8 @@ function show(i) {
     document.getElementById('item-img').src = '';
     document.getElementById('desc').textContent = '';
     document.getElementById('comments').value = '';
+    document.getElementById('disposition-comments').value = '';
+    document.getElementById('review-comments').value = '';
     document.querySelectorAll('input[name=type]').forEach(cb => cb.checked = false);
     document.querySelectorAll('input[name=disposition]').forEach(cb => cb.checked = false);
     document.querySelectorAll('input[name=review]').forEach(cb => cb.checked = false);
@@ -357,7 +391,10 @@ function show(i) {
   }
   const x = filtered[i];
   document.getElementById('counter').textContent = `Item ${i+1} / ${filtered.length}`;
-  document.getElementById('item-img').src = x.image_file || x.image_url || '';
+  const itemImg = document.getElementById('item-img');
+  itemImg.src = x.image_file || x.image_url || '';
+  // Reset zoom state when switching items
+  itemImg.classList.remove('zoomed');
   document.getElementById('desc').textContent = (x.description || '') + (x.client ? ' — ' + x.client : '');
   document.getElementById('comments').value = x.comments || '';
   document.querySelectorAll('input[name=type]').forEach(cb => {
@@ -366,10 +403,13 @@ function show(i) {
   document.querySelectorAll('input[name=disposition]').forEach(cb => {
     cb.checked = (x.disposition === cb.value);
   });
+  document.getElementById('disposition-comments').value = x.disposition_comments || '';
   document.querySelectorAll('input[name=review]').forEach(cb => {
     cb.checked = (x.review || '').split(',').includes(cb.value);
   });
-  document.getElementById('status').textContent = '';
+  document.getElementById('review-comments').value = x.review_comments || '';
+  // Show item ID in status when item is loaded
+  document.getElementById('status').textContent = `Showing item: ${x.item_id || 'Unknown'}`;
 }
 
 function saveCurrent(callback) {
@@ -378,19 +418,27 @@ function saveCurrent(callback) {
   const comments = document.getElementById('comments').value;
   const type = Array.from(document.querySelectorAll('input[name=type]')).find(cb => cb.checked)?.value || '';
   const disposition = Array.from(document.querySelectorAll('input[name=disposition]')).find(cb => cb.checked)?.value || '';
+  const dispositionComments = document.getElementById('disposition-comments').value || '';
   const review = Array.from(document.querySelectorAll('input[name=review]')).filter(cb => cb.checked).map(cb => cb.value).join(',');
+  const reviewComments = document.getElementById('review-comments').value || '';
   fetch('/api/item/' + item.id, {
     method: "POST",
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({comments, type, disposition, review}),
+    body: JSON.stringify({comments, type, disposition, disposition_comments: dispositionComments, review, review_comments: reviewComments}),
   })
   .then(res => res.json())
   .then(d => {
     item.comments = comments;
     item.type = type;
     item.disposition = disposition;
+    item.disposition_comments = dispositionComments;
     item.review = review;
+    item.review_comments = reviewComments;
     document.getElementById('status').textContent = "Saved!";
+    // Restore item ID display after a short delay
+    setTimeout(() => {
+      document.getElementById('status').textContent = `Showing item: ${item.item_id || 'Unknown'}`;
+    }, 1500);
     if(callback) callback();
   });
 }
@@ -423,10 +471,12 @@ document.addEventListener('keydown', function(e) {
   if(e.key === 'f') toggleBox('type-furniture');
   if(e.key === 'a') toggleBox('type-art');
   if(e.key === 'b') toggleBox('type-books');
+  if(e.key === 'p') toggleBox('type-plates');
   if(e.key === 'o') toggleBox('type-other');
   if(e.key === 'v') toggleBox('type-silver');
   if(e.key === 's') toggleBox('disposition-sell');
   if(e.key === 'd') toggleBox('disposition-donate');
+  if(e.key === 'g') toggleBox('disposition-gift');
   if(e.key === 't') toggleBox('disposition-toss');
   if(e.key === 'ArrowRight') document.getElementById('next').onclick();
   if(e.key === 'ArrowLeft') document.getElementById('prev').onclick();
@@ -448,6 +498,7 @@ function applyFiltersAndSearch() {
     let passesQ = !q ||
         (x.description||'').toLowerCase().includes(q) ||
         (x.client||'').toLowerCase().includes(q) ||
+        (x.item_id||'').toLowerCase().includes(q) ||
         (x.id+"").toLowerCase().includes(q);
     return passesType && passesQ;
   });
@@ -487,7 +538,29 @@ fetch('/api/items').then(r=>r.json()).then(data=>{
   items = data;
   filtered = items.slice();
   renderTypeFilters();
-  show(idx);
+  
+  // Check if there's an item parameter in the URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const itemParam = urlParams.get('item');
+  
+  if (itemParam) {
+    // Find the item by item_id
+    const targetIndex = items.findIndex(item => item.item_id === itemParam);
+    if (targetIndex !== -1) {
+      // Filter to show only this item
+      filtered = [items[targetIndex]];
+      idx = 0;
+      show(idx);
+      document.getElementById('status').textContent = `Showing item: ${itemParam}`;
+    } else {
+      // Item not found, show all items
+      show(idx);
+      document.getElementById('status').textContent = `Item "${itemParam}" not found. Showing all items.`;
+    }
+  } else {
+    // No item parameter, show all items
+    show(idx);
+  }
 });
 
 </script>

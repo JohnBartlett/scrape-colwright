@@ -7,6 +7,7 @@ function inferTypeFromDescription(desc) {
   if (desc.includes("furniture")) return "Furniture";
   if (desc.includes("book")) return "Books";
   if (desc.includes("silver")) return "Silver";
+  if (desc.includes("plate")) return "Plates";
   // Add more rules as needed
   return "Other";
 }

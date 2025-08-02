@@ -1,0 +1,48 @@
+# 🎯 ColWright Inventory System - Cursor Rules
+# This file configures automatic setup when opening this directory in Cursor
+
+# Auto-run setup script when directory is opened
+# The setup script will check dependencies and start the server automatically
+
+# Project-specific settings
+project_name: "ColWright Inventory System"
+version: "v1.8.0"
+description: "Inventory scraper and gallery for ColWright.com"
+
+# Auto-start commands when opening the directory
+auto_start:
+  - "Check if Node.js is installed"
+  - "Install dependencies if needed"
+  - "Start the web server"
+  - "Open browser to localhost:3000"
+
+# Quick commands for development
+quick_commands:
+  start_server: "node server.js"
+  install_deps: "npm install"
+  setup_windows: "powershell -ExecutionPolicy Bypass -File setup.ps1"
+  setup_unix: "./setup.sh"
+  check_status: "netstat -an | findstr :3000"
+
+# File associations
+file_associations:
+  "*.js": "javascript"
+  "*.html": "html"
+  "*.css": "css"
+  "*.json": "json"
+  "*.md": "markdown"
+  "*.db": "sqlite"
+
+# Development workflow
+workflow:
+  1: "Run setup script to check dependencies"
+  2: "Start server with 'node server.js'"
+  3: "Access gallery at http://localhost:3000"
+  4: "Access review at http://localhost:3000/review.html"
+  5: "For remote access, use Cloudflare Tunnel"
+
+# Troubleshooting
+troubleshooting:
+  "better-sqlite3 error": "Run 'npm rebuild better-sqlite3' or delete node_modules and run 'npm install'"
+  "port 3000 in use": "Check for other processes using port 3000 with 'netstat -an | findstr :3000'"
+  "permission denied": "Run PowerShell as Administrator or check execution policy" 

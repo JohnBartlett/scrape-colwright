@@ -24,13 +24,15 @@ app.get("/api/items", (req, res) => {
 // API: update comments/type/disposition for a single item
 app.post("/api/item/:id", (req, res) => {
   const { id } = req.params;
-  const { comments, type, disposition } = req.body;
+  const { comments, type, disposition, disposition_comments, review, review_comments } = req.body;
   db.prepare(
-    "UPDATE items SET comments = ?, type = ?, disposition = ? WHERE id = ?"
-  ).run(comments || "", type || "", disposition || "", id);
+    "UPDATE items SET comments = ?, type = ?, disposition = ?, disposition_comments = ?, review = ?, review_comments = ? WHERE id = ?"
+  ).run(comments || "", type || "", disposition || "", disposition_comments || "", review || "", review_comments || "", id);
   res.json({ ok: true });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`Note: On hotel networks, local network access may be restricted`);
+  console.log(`Use ngrok for remote access: ngrok http ${PORT}`);
 });
