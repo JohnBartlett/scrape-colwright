@@ -498,7 +498,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>Inventory Review <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.9.0</span></h1>
+            <h1>Inventory Review <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.9.1</span></h1>
         </header>
 
         <div class="item-display" id="item-display" style="display: none;">
@@ -699,7 +699,12 @@
         let typeSet = new Set();
 
         function singleCheckboxGroup(name) {
-            const boxes = Array.from(document.querySelectorAll(`input[name=${name}]`));
+            const boxes = Array.from(document.querySelectorAll(`input[value]`)).filter(box => {
+                if (name === 'type') return box.id.startsWith('type-');
+                if (name === 'disposition') return box.id.startsWith('disposition-');
+                if (name === 'review') return box.id.startsWith('review-');
+                return false;
+            });
             boxes.forEach(box => {
                 box.addEventListener('change', function() {
                     if (this.checked) {
@@ -708,63 +713,70 @@
                 });
             });
         }
+        
+        function toggleZoom() {
+            const itemImg = document.getElementById('item-image');
+            if (itemImg) {
+                itemImg.classList.toggle('zoomed');
+            }
+        }
+        
         window.addEventListener("DOMContentLoaded", function() {
             singleCheckboxGroup("type");
             singleCheckboxGroup("disposition");
-            
-            // Add click-to-zoom functionality for item image
-            const itemImg = document.getElementById('item-image');
-            itemImg.addEventListener('click', function() {
-                this.classList.toggle('zoomed');
-            });
+            singleCheckboxGroup("review");
         });
 
         function show(i) {
+            const itemDisplay = document.getElementById('item-display');
             if (!filtered.length || !filtered[i]) {
-                document.getElementById('item-id-display').textContent = 'No items';
-                document.getElementById('item-image').src = '';
-                document.getElementById('item-title').textContent = '';
-                document.getElementById('comments').value = '';
-                document.getElementById('disposition-comments').value = '';
-                document.getElementById('review-comments').value = '';
-                document.querySelectorAll('input[name=type]').forEach(cb => cb.checked = false);
-                document.querySelectorAll('input[name=disposition]').forEach(cb => cb.checked = false);
-                document.querySelectorAll('input[name=review]').forEach(cb => cb.checked = false);
-                document.getElementById('status').textContent = '';
+                itemDisplay.style.display = 'none';
                 return;
             }
+            
+            itemDisplay.style.display = 'block';
             const x = filtered[i];
-            document.getElementById('item-id-display').textContent = `Item ${i+1} / ${filtered.length}`;
+            
+            // Update item info
+            document.getElementById('item-id-display').textContent = x.item_id || 'Unknown';
+            document.getElementById('item-title').textContent = (x.description || '') + (x.client ? ' — ' + x.client : '');
+            
+            // Update image
             const itemImg = document.getElementById('item-image');
             itemImg.src = x.image_file || x.image_url || '';
-            // Reset zoom state when switching items
             itemImg.classList.remove('zoomed');
-            document.getElementById('item-title').textContent = (x.description || '') + (x.client ? ' — ' + x.client : '');
+            
+            // Update form fields
             document.getElementById('comments').value = x.comments || '';
-            document.querySelectorAll('input[name=type]').forEach(cb => {
+            document.getElementById('disposition-comments').value = x.disposition_comments || '';
+            document.getElementById('review-comments').value = x.review_comments || '';
+            
+            // Update checkboxes
+            document.querySelectorAll('input[id^="type-"]').forEach(cb => {
                 cb.checked = (x.type === cb.value);
             });
-            document.querySelectorAll('input[name=disposition]').forEach(cb => {
+            document.querySelectorAll('input[id^="disposition-"]').forEach(cb => {
                 cb.checked = (x.disposition === cb.value);
             });
-            document.getElementById('disposition-comments').value = x.disposition_comments || '';
-            document.querySelectorAll('input[name=review]').forEach(cb => {
+            document.querySelectorAll('input[id^="review-"]').forEach(cb => {
                 cb.checked = (x.review || '').split(',').includes(cb.value);
             });
-            document.getElementById('review-comments').value = x.review_comments || '';
-            // Show item ID in status when item is loaded
-            document.getElementById('status').textContent = `Showing item: ${x.item_id || 'Unknown'} (${idx + 1} of ${filtered.length})`;
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = i === 0;
+            document.getElementById('next-btn').disabled = i === filtered.length - 1;
         }
 
         function saveCurrent(callback) {
             if (!filtered.length) return;
             const item = filtered[idx];
             const comments = document.getElementById('comments').value;
-            const type = Array.from(document.querySelectorAll('input[name=type]')).find(cb => cb.checked)?.value || '';
-            const disposition = Array.from(document.querySelectorAll('input[name=disposition]')).find(cb => cb.checked)?.value || '';
+            const type = Array.from(document.querySelectorAll('input[id^="type-"]')).find(cb => cb.checked)?.value || '';
+            const disposition = Array.from(document.querySelectorAll('input[id^="disposition-"]')).find(cb => cb.checked)?.value || '';
             const dispositionComments = document.getElementById('disposition-comments').value || '';
-            const review = Array.from(document.querySelectorAll('input[name=review]')).filter(cb => cb.checked).map(cb => cb.value).join(',');
+            const review = Array.from(document.querySelectorAll('input[id^="review-"]')).filter(cb => cb.checked).map(cb => cb.value).join(',');
             const reviewComments = document.getElementById('review-comments').value || '';
+            
             fetch('/api/item/' + item.id, {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
@@ -778,28 +790,33 @@
                 item.disposition_comments = dispositionComments;
                 item.review = review;
                 item.review_comments = reviewComments;
-                document.getElementById('status').textContent = "Saved!";
-                // Restore item ID display after a short delay
+                
+                // Show save feedback
+                const saveBtn = document.querySelector('.save-btn');
+                const originalText = saveBtn.textContent;
+                saveBtn.textContent = 'Saved!';
+                saveBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                
                 setTimeout(() => {
-                    document.getElementById('status').textContent = `Showing item: ${item.item_id || 'Unknown'}`;
+                    saveBtn.textContent = originalText;
+                    saveBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
                 }, 1500);
+                
                 if(callback) callback();
             });
         }
-        document.getElementById('item-form').onsubmit = function(e) {
-            e.preventDefault();
-            saveCurrent();
-        };
-        document.getElementById('next').onclick = function() {
+        
+        function nextItem() {
             if (filtered.length && idx < filtered.length-1) {
                 saveCurrent(() => { idx++; show(idx); });
             }
-        };
-        document.getElementById('prev').onclick = function() {
+        }
+        
+        function previousItem() {
             if (filtered.length && idx > 0) {
                 saveCurrent(() => { idx--; show(idx); });
             }
-        };
+        }
 
         function getCheckedTypes() {
             const checked = Array.from(document.querySelectorAll('input.type-filter[type=checkbox]:checked'));
@@ -822,8 +839,8 @@
             if(e.key === 'd') toggleBox('disposition-donate');
             if(e.key === 'g') toggleBox('disposition-gift');
             if(e.key === 't') toggleBox('disposition-toss');
-            if(e.key === 'ArrowRight') document.getElementById('next').onclick();
-            if(e.key === 'ArrowLeft') document.getElementById('prev').onclick();
+            if(e.key === 'ArrowRight') nextItem();
+            if(e.key === 'ArrowLeft') previousItem();
             if(e.key === 'n' && document.getElementById('typefilter-no-type')) document.getElementById('typefilter-no-type').click();
         });
 
@@ -898,13 +915,13 @@
             filterDiv.innerHTML = '';
             Array.from(typeSet).sort().forEach(type => {
                 const label = document.createElement('label');
-                label.className = 'type-filter-label';
-                label.innerHTML = `<input class="type-filter" type="checkbox" value="${type}"> ${type}`;
+                label.className = 'filter-checkbox';
+                label.innerHTML = `<input class="type-filter" type="checkbox" value="${type}"> <span>${type}</span>`;
                 filterDiv.appendChild(label);
             });
             const labelNoType = document.createElement('label');
-            labelNoType.className = 'type-filter-label';
-            labelNoType.innerHTML = `<input class="type-filter" type="checkbox" value="__no_type__" id="typefilter-no-type"> No Type`;
+            labelNoType.className = 'filter-checkbox';
+            labelNoType.innerHTML = `<input class="type-filter" type="checkbox" value="__no_type__" id="typefilter-no-type"> <span>No Type</span>`;
             filterDiv.appendChild(labelNoType);
             filterDiv.querySelectorAll('.type-filter').forEach(cb => {
                 cb.addEventListener('change', applyFiltersAndSearch);
@@ -928,11 +945,9 @@
                     filtered = [items[targetIndex]];
                     idx = 0;
                     show(idx);
-                    document.getElementById('status').textContent = `Showing item: ${itemParam} (1 of 1)`;
                 } else {
                     // Item not found, show all items
                     show(idx);
-                    document.getElementById('status').textContent = `Item "${itemParam}" not found. Showing all items.`;
                 }
             } else {
                 // No item parameter, show all items
