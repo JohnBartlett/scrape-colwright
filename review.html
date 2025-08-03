@@ -1,655 +1,949 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Inventory Review</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f8fafc;
-      margin: 0;
-      padding: 0;
-      color: #222;
-    }
-    h1 {
-      color: #3366bb;
-      margin-top: 18px;
-      margin-bottom: 4px;
-      letter-spacing: 2px;
-      font-size: 2rem;
-      text-align: center;
-    }
-    .search-box {
-      text-align: center;
-      margin-bottom: 10px;
-      margin-top: 10px;
-    }
-    #item-count {
-      text-align: center;
-      margin: 8px 0;
-      font-size: 0.95em;
-      color: #3861b4;
-      font-weight: 500;
-    }
-    #review-search {
-      width: 200px;
-      padding: 6px 12px;
-      border: 1px solid #b4c4e0;
-      border-radius: 7px;
-      font-size: 1em;
-      margin-right: 8px;
-    }
-    #review-search-btn {
-      padding: 6px 18px;
-      border: none;
-      background: #4e77de;
-      color: #fff;
-      border-radius: 6px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background 0.18s;
-    }
-    #review-search-btn:hover {
-      background: #2848b6;
-    }
-    #review-layout {
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-      background: #fff;
-      max-width: 98vw;
-      min-width: 220px;
-      min-height: 440px;
-      margin: 10px auto 0 auto;
-      border-radius: 12px;
-      box-shadow: 0 4px 24px #26395918;
-      padding: 14px 1vw;
-      gap: 28px;
-    }
-    #img-section {
-      flex: 0 0 auto;
-      min-width: 240px;
-      max-width: 700px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 12px;
-      text-align: center;
-    }
-    #desc {
-      font-size: 1.17em;
-      color: #355;
-      margin-bottom: 2px;
-      margin-top: 0;
-      font-weight: 500;
-      max-width: 650px;
-      letter-spacing: .2px;
-      text-align: center;
-      padding: 0 0 7px 0;
-    }
-         #item-img {
-       border-radius: 12px;
-       max-width: 520px;
-       max-height: 800px;
-       width: 45vw;
-       min-width: 120px;
-       object-fit: contain;
-       box-shadow: 0 3px 18px #334dbe1a;
-       background: #f6faff;
-       margin-bottom: 12px;
-       margin-top: 0;
-       cursor: pointer;
-       transition: all 0.3s ease;
-     }
-     
-     #item-img:hover {
-       box-shadow: 0 4px 20px #334dbe30;
-       transform: scale(1.02);
-     }
-     
-     #item-img.zoomed {
-       max-width: 1040px;
-       max-height: 1600px;
-       width: 90vw;
-       z-index: 1000;
-       position: relative;
-       box-shadow: 0 8px 32px #334dbe40;
-     }
-    #comments-box {
-      width: 100%;
-      padding-left: 2px;
-      padding-right: 2px;
-    }
-    #comments {
-      font-family: inherit;
-      width: 100%;
-      padding: 10px;
-      font-size: 1.08em;
-      border: 1px solid #ced6e3;
-      border-radius: 7px;
-      margin: 4px 0 2px 0;
-      min-height: 56px;
-      background: #f6f8fa;
-      resize: vertical;
-      transition: border 0.2s;
-    }
-    #comments:focus {
-      border: 1.5px solid #5471b7;
-      outline: none;
-      background: #e9f0fb;
-    }
-    #right-section {
-      flex: 1 1 0;
-      min-width: 180px;
-      max-width: 360px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.6em;
-      margin-left: auto;
-      margin-right: 0;
-    }
-    #nav {
-      margin-bottom: 1em;
-      font-size: 1em;
-      text-align: right;
-      width: 100%;
-    }
-    #nav button {
-      background: #e3eaff;
-      color: #356acd;
-      border: none;
-      border-radius: 5px;
-      font-size: 1.25em;
-      margin: 0 7px 0 0;
-      width: 40px;
-      height: 40px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    #nav button:last-child { margin-right: 0; }
-    #nav button:hover {
-      background: #b3c9fa;
-    }
-    #counter {
-      margin: 0 10px;
-      font-size: 1.08em;
-      font-weight: 500;
-    }
-    form {
-      margin: 0;
-      text-align: right;
-      width: 100%;
-      max-width: 340px;
-    }
-    .group {
-      margin-bottom: 15px;
-      padding: 5px 0;
-      border-radius: 5px;
-      background: #f8fafc;
-      text-align: right;
-    }
-    .group span {
-      display: block;
-      font-size: 1.06em;
-      font-weight: 600;
-      color: #3366bb;
-      margin-bottom: 2px;
-    }
-    .group label {
-      margin-right: 0.7em;
-      font-weight: 460;
-      font-size: 1em;
-      color: #404060;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .group label:last-child { margin-right: 0; }
-    #item-form button[type=submit] {
-      background: #4d89e3;
-      color: #fff;
-      padding: 7px 28px;
-      border: none;
-      border-radius: 6px;
-      font-size: 1.08em;
-      cursor: pointer;
-      margin: 10px 0 0 0;
-      display: inline-block;
-      transition: background 0.2s;
-      box-shadow: 0 1px 6px #284d9a15;
-    }
-    #item-form button[type=submit]:hover {
-      background: #2758b6;
-    }
-    #status {
-      margin: 10px 0 0 0;
-      color: #369853;
-      font-weight: 500;
-      text-align: right;
-      min-height: 1em;
-    }
-    #type-filters-review {
-      text-align: center;
-      margin-bottom: 4px;
-      margin-top: 4px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 11px;
-    }
-    .type-filter-label {
-      font-size: 1em;
-      padding: 5px 10px;
-      border-radius: 7px;
-      background: #e8eefa;
-      border: 1px solid #b8c7e9;
-      color: #253050;
-      cursor: pointer;
-      display: flex; align-items: center; gap: 3px;
-      transition: background 0.18s;
-    }
-    .type-filter-label input[type="checkbox"] {
-      accent-color: #4871e8;
-      margin-right: 3px;
-    }
-    .type-filter-label:hover {
-      background: #bed8ff;
-      color: #183678;
-    }
-    #status-filters {
-      text-align: center;
-      margin-bottom: 4px;
-      margin-top: 4px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 11px;
-    }
-    .status-filter-label {
-      font-size: 1em;
-      padding: 5px 10px;
-      border-radius: 7px;
-      background: #e8eefa;
-      border: 1px solid #b8c7e9;
-      color: #253050;
-      cursor: pointer;
-      display: flex; align-items: center; gap: 3px;
-      transition: background 0.18s;
-    }
-    .status-filter-label input[type="checkbox"] {
-      accent-color: #4871e8;
-      margin-right: 3px;
-    }
-    .status-filter-label:hover {
-      background: #bed8ff;
-      color: #183678;
-    }
-    #cheatsheet {
-      margin: 12px auto 0 auto;
-      border-radius: 7px;
-      background: #fcfcfc;
-      box-shadow: 0 1px 4px #99bbee18;
-      padding: 8px 16px;
-      color: #234;
-      max-width: 90vw;
-      width: 100%;
-      font-size: .92em;
-      line-height: 1.5;
-      text-align: center;
-    }
-    #cheatsheet code { background: #f7f9fa; border-radius: 4px; padding: 1px 5px; }
-    @media (max-width: 950px) {
-      #review-layout { flex-direction: column; padding: 8px 0vw 6px 0vw; max-width: 100vw;}
-      #img-section, #right-section { max-width: 99vw; width: 100%; }
-      #img-section { align-items: center; }
-      .group, form, #nav, #status { text-align: center !important; }
-      #comments { min-width: 0; }
-      #item-img { max-width: 94vw; }
-      #desc { max-width: 94vw; }
-      #right-section { max-width: unset; }
-      #cheatsheet {
-        max-width: 95vw;
-        font-size: .90em;
-      }
-    }
-    @media (max-width: 540px) {
-      #review-layout { padding: 4px 0vw; }
-      #cheatsheet {
-        max-width: 98vw;
-        font-size: .85em;
-        padding: 6px 12px;
-        margin: 8px auto 0 auto;
-        line-height: 1.4;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Review</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.15rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .item-display {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f1f3f4;
+        }
+
+        .item-info h2 {
+            color: #667eea;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .item-id {
+            color: #666;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .navigation-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .nav-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .item-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .image-section {
+            text-align: center;
+        }
+
+        .item-image {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .item-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 35px rgba(0,0,0,0.2);
+        }
+
+        .item-image.zoomed {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(2);
+            z-index: 1000;
+            max-width: 90vw;
+            max-height: 90vh;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+
+        .form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            background: #f8f9fa;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #667eea;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked + span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .save-section {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .search-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        #item-count {
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        #search-container {
+            display: flex;
+            gap: 12px;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+
+        #review-search {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        #review-search:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #review-search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        #review-search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .filters-section {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            align-items: start;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .filter-checkbox:hover {
+            background: #f8f9fa;
+        }
+
+        .filter-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #667eea;
+        }
+
+        .filter-checkbox input[type="checkbox"]:checked + span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        #cheatsheet {
+            margin: 20px auto 0 auto;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            padding: 15px 20px;
+            color: #495057;
+            max-width: 90vw;
+            width: 100%;
+            font-size: 0.9em;
+            line-height: 1.6;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        #cheatsheet strong {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        #cheatsheet code {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px 25px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f3f4;
+            vertical-align: top;
+        }
+
+        tr:hover {
+            background: linear-gradient(90deg, #f8f9ff 0%, #f0f2ff 100%);
+            transition: all 0.2s ease;
+        }
+
+        .item-link {
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .item-link:hover {
+            color: #5a6fd8;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .item-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .filters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+            
+            .search-section, .filters-section {
+                padding: 20px;
+            }
+            
+            #search-container {
+                flex-direction: column;
+            }
+            
+            #review-search-btn {
+                width: 100%;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
-  <h1>Inventory Review <span style="font-size: 0.6em; color: #666; font-weight: normal;">v1.8.8</span></h1>
-  <div class="search-box">
-    <input id="review-search" type="text" placeholder="Jump/search by ItemID, description, client...">
-    <button type="button" id="review-search-btn">Find</button>
-  </div>
-  <div id="item-count"></div>
-  <div id="type-filters-review"></div>
-  <div id="status-filters">
-    <label class="status-filter-label">
-      <input type="checkbox" id="has-comments-filter"> Has comments
-    </label>
-    <label class="status-filter-label">
-      <input type="checkbox" id="needs-review-filter"> Needs review
-    </label>
-  </div>
-  <div id="review-layout">
-    <div id="img-section">
-      <div id="desc"></div>
-      <img id="item-img" src="" alt="Item Image"/>
-      <div id="comments-box">
-        <textarea id="comments" placeholder="Add comments..."></textarea>
-      </div>
+    <div class="container">
+        <header>
+            <h1>Inventory Review <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.9.0</span></h1>
+        </header>
+
+        <div class="item-display" id="item-display" style="display: none;">
+            <div class="item-header">
+                <div class="item-info">
+                    <h2 id="item-title">Item Title</h2>
+                    <div class="item-id" id="item-id-display">Item ID</div>
+                </div>
+                <div class="navigation-controls">
+                    <button class="nav-btn" id="prev-btn" onclick="previousItem()">← Previous</button>
+                    <button class="nav-btn" id="next-btn" onclick="nextItem()">Next →</button>
+                </div>
+            </div>
+            
+            <div class="item-content">
+                <div class="image-section">
+                    <img id="item-image" class="item-image" src="" alt="Item image" onclick="toggleZoom()">
+                </div>
+                
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="type-furniture" value="Furniture">
+                                <span>Furniture</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="type-art" value="Art">
+                                <span>Art</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="type-books" value="Books">
+                                <span>Books</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="type-plates" value="Plates">
+                                <span>Plates</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="type-silver" value="Silver">
+                                <span>Silver</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="type-other" value="Other">
+                                <span>Other</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="type-none" value="">
+                                <span>No Type</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Disposition</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="disposition-sell" value="Sell">
+                                <span>Sell</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="disposition-donate" value="Donate">
+                                <span>Donate</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="disposition-gift" value="Gift">
+                                <span>Gift</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="disposition-toss" value="Toss">
+                                <span>Toss</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="disposition-comments">Disposition Comments</label>
+                        <textarea id="disposition-comments" placeholder="Enter disposition comments..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Review</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="review-john" value="John">
+                                <span>John</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="review-catharine" value="Catharine">
+                                <span>Catharine</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="review-caroline" value="Caroline">
+                                <span>Caroline</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="review-colwright" value="Colwright">
+                                <span>Colwright</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="review-comments">Review Comments</label>
+                        <textarea id="review-comments" placeholder="Enter review comments..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comments">General Comments</label>
+                        <textarea id="comments" placeholder="Enter general comments..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="save-section">
+            <button class="save-btn" onclick="saveCurrent()">Save Changes</button>
+        </div>
+
+        <div class="search-section">
+            <div class="search-header">
+                <div class="search-title">Search & Filter Items</div>
+                <div id="item-count">Loading items...</div>
+            </div>
+            
+            <div id="search-container">
+                <input id="review-search" type="text" placeholder="Search items by any info..." autocomplete="off">
+                <button type="button" id="review-search-btn">Find</button>
+            </div>
+
+            <div id="cheatsheet">
+                <strong>Keyboard Cheatsheet:</strong><br>
+                <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous | 
+                <b>Types:</b> <code>f</code> Furniture, <code>a</code> Art, <code>b</code> Books, <code>p</code> Plates, <code>v</code> Silver, <code>o</code> Other, <code>n</code> No Type<br>
+                <b>Disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss | 
+                <b>Search:</b> <code>Enter</code> in search field | 
+                <b>Image:</b> Click to zoom | 
+                <b>Filters:</b> Checkboxes filter by Type, Comments, and Review status
+            </div>
+        </div>
+
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Type Filters</label>
+                    <div id="type-filters">
+                        <!-- Type filters will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Status Filters</label>
+                    <div id="status-filters">
+                        <label class="filter-checkbox">
+                            <input type="checkbox" id="has-comments-filter">
+                            <span>Has comments</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" id="needs-review-filter">
+                            <span>Needs review</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <div>Search Results</div>
+            </div>
+            <div class="table-container">
+                <table id="results-table">
+                    <thead>
+                        <tr>
+                            <th>Item ID</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Disposition</th>
+                            <th>Review</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body">
+                        <tr>
+                            <td colspan="6" class="loading">Loading items...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    <div id="right-section">
-      <div id="nav">
-        <button id="prev" type="button">←</button>
-        <span id="counter"></span>
-        <button id="next" type="button">→</button>
-      </div>
-      <form id="item-form" autocomplete="off">
-        <div class="group">
-          <span>Type</span>
-          <label><input type="checkbox" name="type" value="Furniture" id="type-furniture"> Furniture</label>
-          <label><input type="checkbox" name="type" value="Art" id="type-art"> Art</label>
-          <label><input type="checkbox" name="type" value="Books" id="type-books"> Books</label>
-          <label><input type="checkbox" name="type" value="Silver" id="type-silver"> Silver</label>
-          <label><input type="checkbox" name="type" value="Plates" id="type-plates"> Plates</label>
-          <label><input type="checkbox" name="type" value="Other" id="type-other"> Other</label>
-        </div>
-        <div class="group">
-          <span>Disposition</span>
-          <label><input type="checkbox" name="disposition" value="Sell" id="disposition-sell"> Sell</label>
-          <label><input type="checkbox" name="disposition" value="Donate" id="disposition-donate"> Donate</label>
-          <label><input type="checkbox" name="disposition" value="Gift" id="disposition-gift"> Gift</label>
-          <label><input type="checkbox" name="disposition" value="Toss" id="disposition-toss"> Toss</label>
-          <div style="margin-top: 8px;">
-            <input type="text" id="disposition-comments" placeholder="Disposition comments..." style="width: 100%; padding: 4px 8px; border: 1px solid #ced6e3; border-radius: 4px; font-size: 0.9em;">
-          </div>
-        </div>
-        <div class="group">
-          <span>Review</span>
-          <label><input type="checkbox" name="review" value="John" id="review-john"> John</label>
-          <label><input type="checkbox" name="review" value="Catharine" id="review-catharine"> Catharine</label>
-          <label><input type="checkbox" name="review" value="Caroline" id="review-caroline"> Caroline</label>
-          <label><input type="checkbox" name="review" value="Colwright" id="review-colwright"> Colwright</label>
-          <div style="margin-top: 8px;">
-            <input type="text" id="review-comments" placeholder="Review comments..." style="width: 100%; padding: 4px 8px; border: 1px solid #ced6e3; border-radius: 4px; font-size: 0.9em;">
-          </div>
-        </div>
-        <button type="submit">Save</button>
-      </form>
-      <div id="status"></div>
-    </div>
-  </div>
-  <div id="cheatsheet">
-    <strong>Keyboard Cheatsheet:</strong><br>
-    <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous | 
-    <b>Types:</b> <code>f</code> Furniture, <code>a</code> Art, <code>b</code> Books, <code>p</code> Plates, <code>v</code> Silver, <code>o</code> Other, <code>n</code> No Type<br>
-    <b>Disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss | 
-    <b>Search:</b> <code>Enter</code> in search field | 
-    <b>Image:</b> Click to zoom | 
-    <b>Filters:</b> Checkboxes filter by Type, Comments, and Review status
-  </div>
-<script>
-let items = [];
-let filtered = [];
-let idx = 0;
-let typeSet = new Set();
 
-function singleCheckboxGroup(name) {
-  const boxes = Array.from(document.querySelectorAll(`input[name=${name}]`));
-  boxes.forEach(box => {
-    box.addEventListener('change', function() {
-      if (this.checked) {
-        boxes.forEach(b => { if (b !== this) b.checked = false; });
-      }
-    });
-  });
-}
-window.addEventListener("DOMContentLoaded", function() {
-  singleCheckboxGroup("type");
-  singleCheckboxGroup("disposition");
-  
-  // Add click-to-zoom functionality for item image
-  const itemImg = document.getElementById('item-img');
-  itemImg.addEventListener('click', function() {
-    this.classList.toggle('zoomed');
-  });
-});
+    <script>
+        let items = [];
+        let filtered = [];
+        let idx = 0;
+        let typeSet = new Set();
 
-function show(i) {
-  if (!filtered.length || !filtered[i]) {
-    document.getElementById('counter').textContent = 'No items';
-    document.getElementById('item-img').src = '';
-    document.getElementById('desc').textContent = '';
-    document.getElementById('comments').value = '';
-    document.getElementById('disposition-comments').value = '';
-    document.getElementById('review-comments').value = '';
-    document.querySelectorAll('input[name=type]').forEach(cb => cb.checked = false);
-    document.querySelectorAll('input[name=disposition]').forEach(cb => cb.checked = false);
-    document.querySelectorAll('input[name=review]').forEach(cb => cb.checked = false);
-    document.getElementById('status').textContent = '';
-    return;
-  }
-  const x = filtered[i];
-  document.getElementById('counter').textContent = `Item ${i+1} / ${filtered.length}`;
-  const itemImg = document.getElementById('item-img');
-  itemImg.src = x.image_file || x.image_url || '';
-  // Reset zoom state when switching items
-  itemImg.classList.remove('zoomed');
-  document.getElementById('desc').textContent = (x.description || '') + (x.client ? ' — ' + x.client : '');
-  document.getElementById('comments').value = x.comments || '';
-  document.querySelectorAll('input[name=type]').forEach(cb => {
-    cb.checked = (x.type === cb.value);
-  });
-  document.querySelectorAll('input[name=disposition]').forEach(cb => {
-    cb.checked = (x.disposition === cb.value);
-  });
-  document.getElementById('disposition-comments').value = x.disposition_comments || '';
-  document.querySelectorAll('input[name=review]').forEach(cb => {
-    cb.checked = (x.review || '').split(',').includes(cb.value);
-  });
-  document.getElementById('review-comments').value = x.review_comments || '';
-  // Show item ID in status when item is loaded
-  document.getElementById('status').textContent = `Showing item: ${x.item_id || 'Unknown'} (${idx + 1} of ${filtered.length})`;
-}
+        function singleCheckboxGroup(name) {
+            const boxes = Array.from(document.querySelectorAll(`input[name=${name}]`));
+            boxes.forEach(box => {
+                box.addEventListener('change', function() {
+                    if (this.checked) {
+                        boxes.forEach(b => { if (b !== this) b.checked = false; });
+                    }
+                });
+            });
+        }
+        window.addEventListener("DOMContentLoaded", function() {
+            singleCheckboxGroup("type");
+            singleCheckboxGroup("disposition");
+            
+            // Add click-to-zoom functionality for item image
+            const itemImg = document.getElementById('item-image');
+            itemImg.addEventListener('click', function() {
+                this.classList.toggle('zoomed');
+            });
+        });
 
-function saveCurrent(callback) {
-  if (!filtered.length) return;
-  const item = filtered[idx];
-  const comments = document.getElementById('comments').value;
-  const type = Array.from(document.querySelectorAll('input[name=type]')).find(cb => cb.checked)?.value || '';
-  const disposition = Array.from(document.querySelectorAll('input[name=disposition]')).find(cb => cb.checked)?.value || '';
-  const dispositionComments = document.getElementById('disposition-comments').value || '';
-  const review = Array.from(document.querySelectorAll('input[name=review]')).filter(cb => cb.checked).map(cb => cb.value).join(',');
-  const reviewComments = document.getElementById('review-comments').value || '';
-  fetch('/api/item/' + item.id, {
-    method: "POST",
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({comments, type, disposition, disposition_comments: dispositionComments, review, review_comments: reviewComments}),
-  })
-  .then(res => res.json())
-  .then(d => {
-    item.comments = comments;
-    item.type = type;
-    item.disposition = disposition;
-    item.disposition_comments = dispositionComments;
-    item.review = review;
-    item.review_comments = reviewComments;
-    document.getElementById('status').textContent = "Saved!";
-    // Restore item ID display after a short delay
-    setTimeout(() => {
-      document.getElementById('status').textContent = `Showing item: ${item.item_id || 'Unknown'}`;
-    }, 1500);
-    if(callback) callback();
-  });
-}
-document.getElementById('item-form').onsubmit = function(e) {
-  e.preventDefault();
-  saveCurrent();
-};
-document.getElementById('next').onclick = function() {
-  if (filtered.length && idx < filtered.length-1) {
-    saveCurrent(() => { idx++; show(idx); });
-  }
-};
-document.getElementById('prev').onclick = function() {
-  if (filtered.length && idx > 0) {
-    saveCurrent(() => { idx--; show(idx); });
-  }
-};
+        function show(i) {
+            if (!filtered.length || !filtered[i]) {
+                document.getElementById('item-id-display').textContent = 'No items';
+                document.getElementById('item-image').src = '';
+                document.getElementById('item-title').textContent = '';
+                document.getElementById('comments').value = '';
+                document.getElementById('disposition-comments').value = '';
+                document.getElementById('review-comments').value = '';
+                document.querySelectorAll('input[name=type]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('input[name=disposition]').forEach(cb => cb.checked = false);
+                document.querySelectorAll('input[name=review]').forEach(cb => cb.checked = false);
+                document.getElementById('status').textContent = '';
+                return;
+            }
+            const x = filtered[i];
+            document.getElementById('item-id-display').textContent = `Item ${i+1} / ${filtered.length}`;
+            const itemImg = document.getElementById('item-image');
+            itemImg.src = x.image_file || x.image_url || '';
+            // Reset zoom state when switching items
+            itemImg.classList.remove('zoomed');
+            document.getElementById('item-title').textContent = (x.description || '') + (x.client ? ' — ' + x.client : '');
+            document.getElementById('comments').value = x.comments || '';
+            document.querySelectorAll('input[name=type]').forEach(cb => {
+                cb.checked = (x.type === cb.value);
+            });
+            document.querySelectorAll('input[name=disposition]').forEach(cb => {
+                cb.checked = (x.disposition === cb.value);
+            });
+            document.getElementById('disposition-comments').value = x.disposition_comments || '';
+            document.querySelectorAll('input[name=review]').forEach(cb => {
+                cb.checked = (x.review || '').split(',').includes(cb.value);
+            });
+            document.getElementById('review-comments').value = x.review_comments || '';
+            // Show item ID in status when item is loaded
+            document.getElementById('status').textContent = `Showing item: ${x.item_id || 'Unknown'} (${idx + 1} of ${filtered.length})`;
+        }
 
-function getCheckedTypes() {
-  const checked = Array.from(document.querySelectorAll('input.type-filter[type=checkbox]:checked'));
-  const types = checked.map(cb => cb.value);
-  return types;
-}
+        function saveCurrent(callback) {
+            if (!filtered.length) return;
+            const item = filtered[idx];
+            const comments = document.getElementById('comments').value;
+            const type = Array.from(document.querySelectorAll('input[name=type]')).find(cb => cb.checked)?.value || '';
+            const disposition = Array.from(document.querySelectorAll('input[name=disposition]')).find(cb => cb.checked)?.value || '';
+            const dispositionComments = document.getElementById('disposition-comments').value || '';
+            const review = Array.from(document.querySelectorAll('input[name=review]')).filter(cb => cb.checked).map(cb => cb.value).join(',');
+            const reviewComments = document.getElementById('review-comments').value || '';
+            fetch('/api/item/' + item.id, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({comments, type, disposition, disposition_comments: dispositionComments, review, review_comments: reviewComments}),
+            })
+            .then(res => res.json())
+            .then(d => {
+                item.comments = comments;
+                item.type = type;
+                item.disposition = disposition;
+                item.disposition_comments = dispositionComments;
+                item.review = review;
+                item.review_comments = reviewComments;
+                document.getElementById('status').textContent = "Saved!";
+                // Restore item ID display after a short delay
+                setTimeout(() => {
+                    document.getElementById('status').textContent = `Showing item: ${item.item_id || 'Unknown'}`;
+                }, 1500);
+                if(callback) callback();
+            });
+        }
+        document.getElementById('item-form').onsubmit = function(e) {
+            e.preventDefault();
+            saveCurrent();
+        };
+        document.getElementById('next').onclick = function() {
+            if (filtered.length && idx < filtered.length-1) {
+                saveCurrent(() => { idx++; show(idx); });
+            }
+        };
+        document.getElementById('prev').onclick = function() {
+            if (filtered.length && idx > 0) {
+                saveCurrent(() => { idx--; show(idx); });
+            }
+        };
 
-document.addEventListener('keydown', function(e) {
-  const tag = document.activeElement.tagName;
-  if(tag === "TEXTAREA" || (tag === "INPUT" && document.activeElement.type === "text")) return;
+        function getCheckedTypes() {
+            const checked = Array.from(document.querySelectorAll('input.type-filter[type=checkbox]:checked'));
+            const types = checked.map(cb => cb.value);
+            return types;
+        }
 
-  function toggleBox(id) { const box = document.getElementById(id); if (box) box.checked = !box.checked; }
-  if(e.key === 'f') toggleBox('type-furniture');
-  if(e.key === 'a') toggleBox('type-art');
-  if(e.key === 'b') toggleBox('type-books');
-  if(e.key === 'p') toggleBox('type-plates');
-  if(e.key === 'o') toggleBox('type-other');
-  if(e.key === 'v') toggleBox('type-silver');
-  if(e.key === 's') toggleBox('disposition-sell');
-  if(e.key === 'd') toggleBox('disposition-donate');
-  if(e.key === 'g') toggleBox('disposition-gift');
-  if(e.key === 't') toggleBox('disposition-toss');
-  if(e.key === 'ArrowRight') document.getElementById('next').onclick();
-  if(e.key === 'ArrowLeft') document.getElementById('prev').onclick();
-  if(e.key === 'n' && document.getElementById('typefilter-no-type')) document.getElementById('typefilter-no-type').click();
-});
+        document.addEventListener('keydown', function(e) {
+            const tag = document.activeElement.tagName;
+            if(tag === "TEXTAREA" || (tag === "INPUT" && document.activeElement.type === "text")) return;
 
-function applyFiltersAndSearch() {
-  const q = (document.getElementById('review-search').value || '').toLowerCase().trim();
-  const checkedTypes = getCheckedTypes();
-  const hasCommentsFilter = document.getElementById('has-comments-filter').checked;
-  const needsReviewFilter = document.getElementById('needs-review-filter').checked;
-  
-  filtered = items.filter(x => {
-    let passesType = true;
-    if(checkedTypes.length > 0) {
-      if (checkedTypes.includes('__no_type__')) {
-        passesType = !x.type || !x.type.trim() || checkedTypes.includes(x.type);
-      } else {
-        passesType = x.type && checkedTypes.includes(x.type);
-      }
-    }
-    
-    let passesCommentsFilter = true;
-    if (hasCommentsFilter) {
-      passesCommentsFilter = (x.disposition_comments && x.disposition_comments.trim()) || 
-                            (x.review_comments && x.review_comments.trim());
-    }
-    
-    let passesReviewFilter = true;
-    if (needsReviewFilter) {
-      const hasComments = (x.disposition_comments && x.disposition_comments.trim()) || 
-                         (x.review_comments && x.review_comments.trim());
-      const hasReviewCheckbox = (x.review && x.review.trim());
-      passesReviewFilter = hasComments || hasReviewCheckbox;
-    }
-    
-    let passesQ = !q ||
-        (x.description||'').toLowerCase().includes(q) ||
-        (x.client||'').toLowerCase().includes(q) ||
-        (x.item_id||'').toLowerCase().includes(q) ||
-        (x.id+"").toLowerCase().includes(q);
-    
-    return passesType && passesCommentsFilter && passesReviewFilter && passesQ;
-  });
-  idx = 0;
-  show(idx);
-  
-  // Update item count display
-  const countElement = document.getElementById('item-count');
-  if (filtered.length === items.length) {
-    countElement.textContent = `Showing all ${items.length} items`;
-  } else {
-    countElement.textContent = `Showing ${filtered.length} of ${items.length} items`;
-  }
-  
-  // Update status message
-  document.getElementById('status').textContent = filtered.length
-    ? `Showing item: ${filtered[idx]?.item_id || 'Unknown'} (${idx + 1} of ${filtered.length})`
-    : "No match found.";
-}
+            function toggleBox(id) { const box = document.getElementById(id); if (box) box.checked = !box.checked; }
+            if(e.key === 'f') toggleBox('type-furniture');
+            if(e.key === 'a') toggleBox('type-art');
+            if(e.key === 'b') toggleBox('type-books');
+            if(e.key === 'p') toggleBox('type-plates');
+            if(e.key === 'o') toggleBox('type-other');
+            if(e.key === 'v') toggleBox('type-silver');
+            if(e.key === 's') toggleBox('disposition-sell');
+            if(e.key === 'd') toggleBox('disposition-donate');
+            if(e.key === 'g') toggleBox('disposition-gift');
+            if(e.key === 't') toggleBox('disposition-toss');
+            if(e.key === 'ArrowRight') document.getElementById('next').onclick();
+            if(e.key === 'ArrowLeft') document.getElementById('prev').onclick();
+            if(e.key === 'n' && document.getElementById('typefilter-no-type')) document.getElementById('typefilter-no-type').click();
+        });
 
-document.getElementById('review-search-btn').onclick = applyFiltersAndSearch;
-document.getElementById('review-search').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') applyFiltersAndSearch();
-});
+        function applyFiltersAndSearch() {
+            const q = (document.getElementById('review-search').value || '').toLowerCase().trim();
+            const checkedTypes = getCheckedTypes();
+            const hasCommentsFilter = document.getElementById('has-comments-filter').checked;
+            const needsReviewFilter = document.getElementById('needs-review-filter').checked;
+            
+            filtered = items.filter(x => {
+                let passesType = true;
+                if(checkedTypes.length > 0) {
+                    if (checkedTypes.includes('__no_type__')) {
+                        passesType = !x.type || !x.type.trim() || checkedTypes.includes(x.type);
+                    } else {
+                        passesType = x.type && checkedTypes.includes(x.type);
+                    }
+                }
+                
+                let passesCommentsFilter = true;
+                if (hasCommentsFilter) {
+                    passesCommentsFilter = (x.disposition_comments && x.disposition_comments.trim()) || 
+                                          (x.review_comments && x.review_comments.trim());
+                }
+                
+                let passesReviewFilter = true;
+                if (needsReviewFilter) {
+                    const hasComments = (x.disposition_comments && x.disposition_comments.trim()) || 
+                                       (x.review_comments && x.review_comments.trim());
+                    const hasReviewCheckbox = (x.review && x.review.trim());
+                    passesReviewFilter = hasComments || hasReviewCheckbox;
+                }
+                
+                let passesQ = !q ||
+                    (x.description||'').toLowerCase().includes(q) ||
+                    (x.client||'').toLowerCase().includes(q) ||
+                    (x.item_id||'').toLowerCase().includes(q) ||
+                    (x.id+"").toLowerCase().includes(q);
+                
+                return passesType && passesCommentsFilter && passesReviewFilter && passesQ;
+            });
+            idx = 0;
+            show(idx);
+            
+            // Update item count display
+            const countElement = document.getElementById('item-count');
+            if (filtered.length === items.length) {
+                countElement.textContent = `Showing all ${items.length} items`;
+            } else {
+                countElement.textContent = `Showing ${filtered.length} of ${items.length} items`;
+            }
+            
+            // Update status message
+            document.getElementById('status').textContent = filtered.length
+                ? `Showing item: ${filtered[idx]?.item_id || 'Unknown'} (${idx + 1} of ${filtered.length})`
+                : "No match found.";
+        }
 
-// Add event listeners for status filters
-document.getElementById('has-comments-filter').addEventListener('change', applyFiltersAndSearch);
-document.getElementById('needs-review-filter').addEventListener('change', applyFiltersAndSearch);
+        document.getElementById('review-search-btn').onclick = applyFiltersAndSearch;
+        document.getElementById('review-search').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') applyFiltersAndSearch();
+        });
 
-function renderTypeFilters() {
-  typeSet = new Set();
-  items.forEach(x => { if(x.type && x.type.trim()) typeSet.add(x.type.trim()); });
-  const filterDiv = document.getElementById('type-filters-review');
-  filterDiv.innerHTML = '';
-  Array.from(typeSet).sort().forEach(type => {
-    const label = document.createElement('label');
-    label.className = 'type-filter-label';
-    label.innerHTML = `<input class="type-filter" type="checkbox" value="${type}"> ${type}`;
-    filterDiv.appendChild(label);
-  });
-  const labelNoType = document.createElement('label');
-  labelNoType.className = 'type-filter-label';
-  labelNoType.innerHTML = `<input class="type-filter" type="checkbox" value="__no_type__" id="typefilter-no-type"> No Type`;
-  filterDiv.appendChild(labelNoType);
-  filterDiv.querySelectorAll('.type-filter').forEach(cb => {
-    cb.addEventListener('change', applyFiltersAndSearch);
-  });
-}
+        // Add event listeners for status filters
+        document.getElementById('has-comments-filter').addEventListener('change', applyFiltersAndSearch);
+        document.getElementById('needs-review-filter').addEventListener('change', applyFiltersAndSearch);
 
-fetch('/api/items').then(r=>r.json()).then(data=>{
-  items = data;
-  filtered = items.slice();
-  renderTypeFilters();
-  
-  // Check if there's an item parameter in the URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const itemParam = urlParams.get('item');
-  
-  if (itemParam) {
-    // Find the item by item_id
-    const targetIndex = items.findIndex(item => item.item_id === itemParam);
-    if (targetIndex !== -1) {
-      // Filter to show only this item
-      filtered = [items[targetIndex]];
-      idx = 0;
-      show(idx);
-      document.getElementById('status').textContent = `Showing item: ${itemParam} (1 of 1)`;
-    } else {
-      // Item not found, show all items
-      show(idx);
-      document.getElementById('status').textContent = `Item "${itemParam}" not found. Showing all items.`;
-    }
-  } else {
-    // No item parameter, show all items
-    show(idx);
-  }
-  
-  // Initialize item count display
-  const countElement = document.getElementById('item-count');
-  countElement.textContent = `Showing all ${items.length} items`;
-});
+        function renderTypeFilters() {
+            typeSet = new Set();
+            items.forEach(x => { if(x.type && x.type.trim()) typeSet.add(x.type.trim()); });
+            const filterDiv = document.getElementById('type-filters');
+            filterDiv.innerHTML = '';
+            Array.from(typeSet).sort().forEach(type => {
+                const label = document.createElement('label');
+                label.className = 'type-filter-label';
+                label.innerHTML = `<input class="type-filter" type="checkbox" value="${type}"> ${type}`;
+                filterDiv.appendChild(label);
+            });
+            const labelNoType = document.createElement('label');
+            labelNoType.className = 'type-filter-label';
+            labelNoType.innerHTML = `<input class="type-filter" type="checkbox" value="__no_type__" id="typefilter-no-type"> No Type`;
+            filterDiv.appendChild(labelNoType);
+            filterDiv.querySelectorAll('.type-filter').forEach(cb => {
+                cb.addEventListener('change', applyFiltersAndSearch);
+            });
+        }
 
-</script>
+        fetch('/api/items').then(r=>r.json()).then(data=>{
+            items = data;
+            filtered = items.slice();
+            renderTypeFilters();
+            
+            // Check if there's an item parameter in the URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemParam = urlParams.get('item');
+            
+            if (itemParam) {
+                // Find the item by item_id
+                const targetIndex = items.findIndex(item => item.item_id === itemParam);
+                if (targetIndex !== -1) {
+                    // Filter to show only this item
+                    filtered = [items[targetIndex]];
+                    idx = 0;
+                    show(idx);
+                    document.getElementById('status').textContent = `Showing item: ${itemParam} (1 of 1)`;
+                } else {
+                    // Item not found, show all items
+                    show(idx);
+                    document.getElementById('status').textContent = `Item "${itemParam}" not found. Showing all items.`;
+                }
+            } else {
+                // No item parameter, show all items
+                show(idx);
+            }
+            
+            // Initialize item count display
+            const countElement = document.getElementById('item-count');
+            countElement.textContent = `Showing all ${items.length} items`;
+        });
+
+    </script>
 </body>
 </html>

@@ -1,449 +1,579 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Inventory Gallery</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f6f8fb;
-      margin: 0;
-      padding: 0;
-      color: #253050;
-    }
-    #table-loader {
-      display: none;
-      font-size: 1.13em;
-      color: #3861b4;
-      padding: 10px;
-      text-align: center;
-      background: #e8eefa;
-      border-bottom: 1px solid #b8c7e9;
-    }
-    h1 {
-      color: #3561b4;
-      font-size: 2.15rem;
-      letter-spacing: 2px;
-      text-align: center;
-      margin-top: -28px;
-      margin-bottom: 4px;
-    }
-    #topbar-link {
-      width: 96%;
-      margin: 0 auto 0 auto;
-      text-align: right;
-      padding-top: 18px;
-      padding-bottom: 8px;
-      max-width: 1160px;
-    }
-    #topbar-link a {
-      font-size: 1.10em;
-      color: #3262c6;
-      padding: 8px 18px;
-      border-radius: 7px;
-      background: #e5eeff;
-      font-weight: 500;
-      text-decoration: none;
-      box-shadow: 0 1px 5px #4970e00c;
-      transition: background 0.2s, color 0.2s;
-    }
-    #topbar-link a:hover {
-      background: #bed8ff;
-      color: #183678;
-      text-decoration: underline;
-    }
-    #search-container {
-      text-align: center;
-      margin-bottom: 12px;
-    }
-    #item-count {
-      text-align: center;
-      margin: 8px 0;
-      font-size: 0.95em;
-      color: #3861b4;
-      font-weight: 500;
-    }
-    #type-filters {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      margin-bottom: 13px;
-    }
-    .type-filter-label {
-      font-size: 1em;
-      padding: 5px 10px;
-      border-radius: 7px;
-      background: #e8eefa;
-      border: 1px solid #b8c7e9;
-      color: #253050;
-      cursor: pointer;
-      display: flex; align-items: center; gap: 3px;
-      transition: background 0.18s;
-    }
-    .type-filter-label input[type="checkbox"] {
-      accent-color: #4871e8;
-      margin-right: 3px;
-    }
-    .type-filter-label:hover {
-      background: #bed8ff;
-      color: #183678;
-    }
-    #item-search {
-      width: 390px;
-      max-width: 93vw;
-      padding: 12px 18px;
-      font-size: 1em;
-      border: 1.5px solid #b6b6e5;
-      border-radius: 8px;
-      box-shadow: 0 1px 7px #2252c02d;
-      transition: border 0.2s;
-      margin-bottom: 5px;
-    }
-    #item-search:focus {
-      border: 2px solid #4871e8;
-      outline: none;
-    }
-    #item-search-btn {
-      padding: 6px 18px;
-      border: none;
-      background: #4e77de;
-      color: #fff;
-      border-radius: 6px;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background 0.18s;
-      margin-left: 8px;
-    }
-    #item-search-btn:hover {
-      background: #2848b6;
-    }
-    table {
-      border-collapse: collapse;
-      width: 96%;
-      margin: 0 auto 32px auto;
-      background: #fff;
-      box-shadow: 0 4px 24px #192f6110;
-      border-radius: 11px;
-      overflow: hidden;
-    }
-    th, td {
-      border: 1px solid #e0e7f1;
-      padding: 7px 10px;
-      text-align: left;
-      font-size: 1.02em;
-      vertical-align: middle;
-    }
-    th {
-      background-color: #ecf4fd;
-      color: #2d4fa6;
-      font-weight: 600;
-      font-size: 1em;
-      white-space: nowrap;
-      height: 36px;
-      padding-top: 4px;
-      padding-bottom: 4px;
-      border-bottom: 2px solid #b8c7e9;
-    }
-    tr.data-row:nth-child(even) td {
-      background: #f7faff;
-    }
-    tr.data-row:hover td {
-      background: #eaeefc;
-    }
-    .img-thumbs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      min-width: 52px;
-      min-height: 32px;
-    }
-    .img-thumb {
-      max-width: 54px;
-      max-height: 44px;
-      border-radius: 4px;
-      background: #f8fafc;
-      box-shadow: 0 1px 4px #26395911;
-      margin-top: 2px;
-      margin-bottom: 2px;
-      display: block;
-    }
-    .img-single {
-      max-width: 100px;
-      max-height: 68px;
-      border-radius: 7px;
-      box-shadow: 0 1px 4px #4068db19;
-      margin-top: 2px;
-      margin-bottom: 2px;
-    }
-    a {
-      color: #3961cf;
-      text-decoration: none;
-      transition: color 0.16s;
-    }
-    a:hover { text-decoration: underline; color: #2747b8; }
-    .sort-arrow {
-      cursor: pointer;
-      font-size: 1em;
-      margin-left: 2px;
-      color: #5471b7;
-      user-select: none;
-      vertical-align: middle;
-    }
-    .sort-arrow.sorted { color: #21397a; }
-    @media (max-width: 580px) {
-      table { font-size: .90em; }
-      #item-search { width: 99vw; }
-      th, td { padding: 5px 4px; }
-      #topbar-link { width: 99vw; min-width: unset; max-width: unset; padding-top: 10px;}
-      #topbar-link a { padding: 6px 14px; font-size: 1em;}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ColWright Inventory</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.15rem;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-actions {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .review-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .review-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        #search-container {
+            display: flex;
+            gap: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #item-search {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        #item-search:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #item-search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        #item-search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .filters-section {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .filter-checkbox:hover {
+            background: #f8f9fa;
+        }
+
+        .filter-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #667eea;
+        }
+
+        .filter-checkbox input[type="checkbox"]:checked + span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .results-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .results-header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px 25px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #item-count {
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f3f4;
+            vertical-align: top;
+        }
+
+        tr:hover {
+            background: linear-gradient(90deg, #f8f9ff 0%, #f0f2ff 100%);
+            transition: all 0.2s ease;
+        }
+
+        .item-id {
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .item-id:hover {
+            color: #5a6fd8;
+            text-decoration: underline;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-furniture { background: #e3f2fd; color: #1976d2; }
+        .type-art { background: #f3e5f5; color: #7b1fa2; }
+        .type-books { background: #e8f5e8; color: #388e3c; }
+        .type-plates { background: #fff3e0; color: #f57c00; }
+        .type-silver { background: #fce4ec; color: #c2185b; }
+        .type-other { background: #f1f3f4; color: #5f6368; }
+
+        .disposition-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .disposition-sell { background: #e8f5e8; color: #388e3c; }
+        .disposition-donate { background: #e3f2fd; color: #1976d2; }
+        .disposition-gift { background: #fce4ec; color: #c2185b; }
+        .disposition-toss { background: #ffebee; color: #d32f2f; }
+
+        .description {
+            max-width: 300px;
+            line-height: 1.4;
+            color: #555;
+        }
+
+        .image-preview {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e1e5e9;
+            transition: all 0.2s ease;
+        }
+
+        .image-preview:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .filters-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+            
+            .search-section, .filters-section {
+                padding: 20px;
+            }
+            
+            #search-container {
+                flex-direction: column;
+            }
+            
+            #item-search-btn {
+                width: 100%;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
-  <div id="table-loader">Sorting…</div>
-  <div id="topbar-link">
-    <a href="review.html" target="_blank" title="Go to Review Workflow">→ Review Workflow</a>
-  </div>
-  <h1>Inventory Items <span style="font-size: 0.6em; color: #666; font-weight: normal;">v1.8.8</span></h1>
-  <div id="search-container">
-    <input id="item-search" type="text" placeholder="Search items by any info..." autocomplete="off">
-    <button type="button" id="item-search-btn">Find</button>
-  </div>
-  <div id="item-count"></div>
-  <div id="type-filters"></div>
-  <table id="inventory">
-    <thead>
-      <tr>
-        <th>ItemID
-          <span class="sort-arrow" data-col="item_id" data-dir="asc">&#9650;</span>
-          <span class="sort-arrow" data-col="item_id" data-dir="desc">&#9660;</span>
-        </th>
-        <th>Type
-          <span class="sort-arrow" data-col="type" data-dir="asc">&#9650;</span>
-          <span class="sort-arrow" data-col="type" data-dir="desc">&#9660;</span>
-        </th>
-        <th>Disposition
-          <span class="sort-arrow" data-col="disposition" data-dir="asc">&#9650;</span>
-          <span class="sort-arrow" data-col="disposition" data-dir="desc">&#9660;</span>
-        </th>
-        <th>Review
-          <span class="sort-arrow" data-col="review" data-dir="asc">&#9650;</span>
-          <span class="sort-arrow" data-col="review" data-dir="desc">&#9660;</span>
-        </th>
-        <th>Description
-          <span class="sort-arrow" data-col="description" data-dir="asc">&#9650;</span>
-          <span class="sort-arrow" data-col="description" data-dir="desc">&#9660;</span>
-        </th>
-        <th>Client
-          <span class="sort-arrow" data-col="client" data-dir="asc">&#9650;</span>
-          <span class="sort-arrow" data-col="client" data-dir="desc">&#9660;</span>
-        </th>
-        <th>Notes
-          <span class="sort-arrow" data-col="comments" data-dir="asc">&#9650;</span>
-          <span class="sort-arrow" data-col="comments" data-dir="desc">&#9660;</span>
-        </th>
-        <th>Image</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-  <script>
-    let items = [];
-    let typeSet = new Set();
-    let filteredTypes = new Set();
-    let filterNoType = false;
+    <div class="container">
+        <header>
+            <h1>Inventory Items <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.9.0</span></h1>
+            <div class="header-actions">
+                <a href="review.html" target="_blank" class="review-btn">Review Workflow</a>
+            </div>
+        </header>
 
-    function html(s) {
-      return (s==null ? "" : (""+s).replace(/[&<>"']/g, c => ({
-        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-      }[c])));
-    }
+        <div class="search-section">
+            <div id="search-container">
+                <input id="item-search" type="text" placeholder="Search items by any info..." autocomplete="off">
+                <button type="button" id="item-search-btn">Find</button>
+            </div>
+        </div>
 
-    function renderImages(row) {
-      if (Array.isArray(row.image_files) && row.image_files.length) {
-        return '<div class="img-thumbs">' +
-          row.image_files.map(img =>
-            `<a href="/${html(img)}" target="_blank" title="View image">
-              <img src="/${html(img)}" class="img-thumb" alt="item image">
-            </a>`
-          ).join('') + '</div>';
-      }
-      if (row.image_file && row.image_file !== '') {
-        return `<a href="/${html(row.image_file)}" target="_blank">
-                  <img src="/${html(row.image_file)}" class="img-single" alt="item image"></a>`;
-      }
-      return `<span style="color:#888;">No image</span>`;
-    }
+        <div class="filters-section">
+            <div class="filters-grid" id="type-filters">
+                <!-- Type filters will be populated here -->
+            </div>
+        </div>
 
-    function showLoader(text = "Sorting…") {
-      const loader = document.getElementById('table-loader');
-      loader.innerText = text;
-      loader.style.display = '';
-    }
-    function hideLoader() {
-      document.getElementById('table-loader').style.display = 'none';
-    }
+        <div class="results-section">
+            <div class="results-header">
+                <div id="item-count">Loading items...</div>
+            </div>
+            <div class="table-container">
+                <table id="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Item ID</th>
+                            <th>Image</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Disposition</th>
+                            <th>Comments</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <tr>
+                            <td colspan="6" class="loading">Loading inventory items...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    // Loader will always be visible for at least 180ms, which avoids blink/disappear issue.
-    function sortTableBy(col, dir) {
-      showLoader();
-      requestAnimationFrame(() => { // Ensure browser does a paint before continuing
-        setTimeout(() => {
-          items.sort((a, b) => {
-            const aValue = (a[col] || '').toString().toLowerCase();
-            const bValue = (b[col] || '').toString().toLowerCase();
-            if (aValue < bValue) return dir === 'asc' ? -1 : 1;
-            if (aValue > bValue) return dir === 'asc' ? 1 : -1;
-            return 0;
-          });
-          renderTable();
-          hideLoader();
-        }, 180);
-      });
-    }
+    <script>
+        let items = [];
+        let typeSet = new Set();
+        let filteredTypes = new Set();
+        let filterNoType = false;
 
-    function getActiveTypeFilters() {
-      // If none checked, treat as "show all"
-      const checked = Array.from(document.querySelectorAll('input.type-filter[type="checkbox"]:checked'));
-      const checkedTypes = new Set();
-      let activeNoType = false;
-      checked.forEach(input => {
-        if (input.value === '__no_type__') activeNoType = true;
-        else checkedTypes.add(input.value);
-      });
-      return { checkedTypes, activeNoType, showAll: checked.length === 0 };
-    }
-
-    function renderTable() {
-      const tbody = document.querySelector('#inventory tbody');
-      tbody.innerHTML = '';
-      const searchInput = document.getElementById('item-search');
-      const query = searchInput.value.trim().toLowerCase();
-      const { checkedTypes, activeNoType, showAll } = getActiveTypeFilters();
-
-      let visibleCount = 0;
-      items.forEach(row => {
-        // Search filter
-        if (query) {
-          // Fuzzy match across all visible cells
-          const rowText = [
-            row.item_id, row.type, row.disposition, row.review,
-            row.description, row.client, row.comments
-          ].map(x => (x||'').toLowerCase()).join(' || ');
-          if (!rowText.includes(query)) return;
+        function html(s) {
+            return (s==null ? "" : (""+s).replace(/[&<>"']/g, c => ({
+                '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+            }[c])));
         }
-        // Type filter
-        if (!showAll) {
-          const typeVal = (row.type||'').trim();
-          const noType = !typeVal;
-          if (!((checkedTypes.has(typeVal)) || (activeNoType && noType))) return;
+
+        function renderImages(row) {
+            if (Array.isArray(row.image_files) && row.image_files.length) {
+                return '<div class="img-thumbs">' +
+                    row.image_files.map(img =>
+                        `<a href="/${html(img)}" target="_blank" title="View image">
+                            <img src="/${html(img)}" class="img-thumb" alt="item image">
+                        </a>`
+                    ).join('') + '</div>';
+            }
+            if (row.image_file && row.image_file !== '') {
+                return `<a href="/${html(row.image_file)}" target="_blank">
+                        <img src="/${html(row.image_file)}" class="img-single" alt="item image"></a>`;
+            }
+            return `<span style="color:#888;">No image</span>`;
         }
-        visibleCount++;
-        tbody.innerHTML += `<tr class="data-row">
-          <td>
-            <a href="review.html?item=${encodeURIComponent(row.item_id || '')}" target="_blank" title="Review this item">${html(row.item_id || '')}</a>
-          </td>
-          <td>${html(row.type || '')}</td>
-          <td>${html(row.disposition || '')}</td>
-          <td>${html(row.review || '')}</td>
-          <td>${html(row.description || '')}</td>
-          <td>${row.client_url ? `<a href="${html(row.client_url)}" target="_blank">${html(row.client||'')}</a>` : html(row.client||'')}</td>
-          <td>${html(row.comments || '')}</td>
-          <td>${renderImages(row)}</td>
-        </tr>`;
-      });
 
-      // Update item count display
-      const countElement = document.getElementById('item-count');
-      if (visibleCount === items.length) {
-        countElement.textContent = `Showing all ${items.length} items`;
-      } else {
-        countElement.textContent = `Showing ${visibleCount} of ${items.length} items`;
-      }
+        function showLoader(text = "Sorting…") {
+            const loader = document.getElementById('table-loader');
+            loader.innerText = text;
+            loader.style.display = '';
+        }
+        function hideLoader() {
+            document.getElementById('table-loader').style.display = 'none';
+        }
 
-      // Attach sort events after every render
-      document.querySelectorAll('.sort-arrow').forEach(el => {
-        el.onclick = function() {
-          document.querySelectorAll('.sort-arrow').forEach(e => e.classList.remove('sorted'));
-          this.classList.add('sorted');
-          const col = this.getAttribute('data-col');
-          const dir = this.getAttribute('data-dir');
-          sortTableBy(col, dir);
-        };
-      });
-    }
+        // Loader will always be visible for at least 180ms, which avoids blink/disappear issue.
+        function sortTableBy(col, dir) {
+            showLoader();
+            requestAnimationFrame(() => { // Ensure browser does a paint before continuing
+                setTimeout(() => {
+                    items.sort((a, b) => {
+                        const aValue = (a[col] || '').toString().toLowerCase();
+                        const bValue = (b[col] || '').toString().toLowerCase();
+                        if (aValue < bValue) return dir === 'asc' ? -1 : 1;
+                        if (aValue > bValue) return dir === 'asc' ? 1 : -1;
+                        return 0;
+                    });
+                    renderTable();
+                    hideLoader();
+                }, 180);
+            });
+        }
 
-    function renderTypeFilters() {
-      const typeFiltersDiv = document.getElementById('type-filters');
-      typeFiltersDiv.innerHTML = ''; // Clear
+        function getActiveTypeFilters() {
+            // If none checked, treat as "show all"
+            const checked = Array.from(document.querySelectorAll('input.type-filter[type="checkbox"]:checked'));
+            const checkedTypes = new Set();
+            let activeNoType = false;
+            checked.forEach(input => {
+                if (input.value === '__no_type__') activeNoType = true;
+                else checkedTypes.add(input.value);
+            });
+            return { checkedTypes, activeNoType, showAll: checked.length === 0 };
+        }
 
-      // Sorted unique types (ignore empty/undefined for now)
-      const sortedTypes = Array.from(typeSet).filter(t => t).sort((a,b) => a.localeCompare(b));
-      // Checkbox for each type
-      sortedTypes.forEach(type => {
-        const label = document.createElement('label');
-        label.className = 'type-filter-label';
-        label.innerHTML = `<input class="type-filter" type="checkbox" value="${html(type)}"> ${html(type)}`;
-        typeFiltersDiv.appendChild(label);
-      });
-      
-      // Add hardcoded "Plates" filter if it doesn't exist in the data yet
-      if (!sortedTypes.includes('Plates')) {
-        const labelPlates = document.createElement('label');
-        labelPlates.className = 'type-filter-label';
-        labelPlates.innerHTML = `<input class="type-filter" type="checkbox" value="Plates"> Plates`;
-        typeFiltersDiv.appendChild(labelPlates);
-      }
-      
-      // Checkbox for "No Type"
-      const labelNoType = document.createElement('label');
-      labelNoType.className = 'type-filter-label';
-      labelNoType.innerHTML = `<input class="type-filter" type="checkbox" value="__no_type__"> No Type`;
-      typeFiltersDiv.appendChild(labelNoType);
+        function renderTable() {
+            const tbody = document.querySelector('#inventory-table tbody');
+            tbody.innerHTML = '';
+            const searchInput = document.getElementById('item-search');
+            const query = searchInput.value.trim().toLowerCase();
+            const { checkedTypes, activeNoType, showAll } = getActiveTypeFilters();
 
-      // Attach change handler:
-      typeFiltersDiv.querySelectorAll('.type-filter').forEach(cb => {
-        cb.addEventListener('change', renderTable);
-      });
-    }
+            let visibleCount = 0;
+            items.forEach(row => {
+                // Search filter
+                if (query) {
+                    // Fuzzy match across all visible cells
+                    const rowText = [
+                        row.item_id, row.type, row.disposition, row.review,
+                        row.description, row.client, row.comments
+                    ].map(x => (x||'').toLowerCase()).join(' || ');
+                    if (!rowText.includes(query)) return;
+                }
+                // Type filter
+                if (!showAll) {
+                    const typeVal = (row.type||'').trim();
+                    const noType = !typeVal;
+                    if (!((checkedTypes.has(typeVal)) || (activeNoType && noType))) return;
+                }
+                visibleCount++;
+                tbody.innerHTML += `<tr class="data-row">
+                    <td>
+                        <a href="review.html?item=${encodeURIComponent(row.item_id || '')}" target="_blank" title="Review this item" class="item-id">${html(row.item_id || '')}</a>
+                    </td>
+                    <td>${renderImages(row)}</td>
+                    <td class="description">${html(row.description || '')}</td>
+                    <td>
+                        <span class="type-badge ${row.type ? row.type.toLowerCase().replace(/\s+/g, '-') : 'type-other'}">${html(row.type || '')}</span>
+                    </td>
+                    <td>
+                        <span class="disposition-badge ${row.disposition ? row.disposition.toLowerCase().replace(/\s+/g, '-') : 'disposition-other'}">${html(row.disposition || '')}</span>
+                    </td>
+                    <td>${html(row.comments || '')}</td>
+                </tr>`;
+            });
 
-    // On page load:
-    document.addEventListener('DOMContentLoaded', () => {
-      fetch('/api/items').then(r=>r.json()).then(data=>{
-        items = data;
-        // Compute set of unique types
-        typeSet.clear();
-        items.forEach(row => {
-          const tval = (row.type||'').trim();
-          if (tval) typeSet.add(tval);
+            // Update item count display
+            const countElement = document.getElementById('item-count');
+            if (visibleCount === items.length) {
+                countElement.textContent = `Showing all ${items.length} items`;
+            } else {
+                countElement.textContent = `Showing ${visibleCount} of ${items.length} items`;
+            }
+
+            // Attach sort events after every render
+            document.querySelectorAll('.sort-arrow').forEach(el => {
+                el.onclick = function() {
+                    document.querySelectorAll('.sort-arrow').forEach(e => e.classList.remove('sorted'));
+                    this.classList.add('sorted');
+                    const col = this.getAttribute('data-col');
+                    const dir = this.getAttribute('data-dir');
+                    sortTableBy(col, dir);
+                };
+            });
+        }
+
+        function renderTypeFilters() {
+            const typeFiltersDiv = document.getElementById('type-filters');
+            typeFiltersDiv.innerHTML = ''; // Clear
+
+            // Sorted unique types (ignore empty/undefined for now)
+            const sortedTypes = Array.from(typeSet).filter(t => t).sort((a,b) => a.localeCompare(b));
+            // Checkbox for each type
+            sortedTypes.forEach(type => {
+                const label = document.createElement('label');
+                label.className = 'type-filter-label';
+                label.innerHTML = `<input class="type-filter" type="checkbox" value="${html(type)}"> ${html(type)}`;
+                typeFiltersDiv.appendChild(label);
+            });
+            
+            // Add hardcoded "Plates" filter if it doesn't exist in the data yet
+            if (!sortedTypes.includes('Plates')) {
+                const labelPlates = document.createElement('label');
+                labelPlates.className = 'type-filter-label';
+                labelPlates.innerHTML = `<input class="type-filter" type="checkbox" value="Plates"> Plates`;
+                typeFiltersDiv.appendChild(labelPlates);
+            }
+            
+            // Checkbox for "No Type"
+            const labelNoType = document.createElement('label');
+            labelNoType.className = 'type-filter-label';
+            labelNoType.innerHTML = `<input class="type-filter" type="checkbox" value="__no_type__"> No Type`;
+            typeFiltersDiv.appendChild(labelNoType);
+
+            // Attach change handler:
+            typeFiltersDiv.querySelectorAll('.type-filter').forEach(cb => {
+                cb.addEventListener('change', renderTable);
+            });
+        }
+
+        // On page load:
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/api/items').then(r=>r.json()).then(data=>{
+                items = data;
+                // Compute set of unique types
+                typeSet.clear();
+                items.forEach(row => {
+                    const tval = (row.type||'').trim();
+                    if (tval) typeSet.add(tval);
+                });
+                renderTypeFilters();
+                renderTable();
+            });
+
+            // SEARCH filter logic and Enter handler
+            const searchInput = document.getElementById('item-search');
+            const searchButton = document.getElementById('item-search-btn');
+            
+            function handleSearchInput() {
+                renderTable();
+            }
+            
+            searchInput.addEventListener('input', handleSearchInput);
+            searchInput.addEventListener('keydown', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    renderTable();
+                }
+            });
+            
+            // Find button click handler
+            searchButton.addEventListener('click', function() {
+                renderTable();
+            });
         });
-        renderTypeFilters();
-        renderTable();
-      });
 
-             // SEARCH filter logic and Enter handler
-       const searchInput = document.getElementById('item-search');
-       const searchButton = document.getElementById('item-search-btn');
-       
-       function handleSearchInput() {
-         renderTable();
-       }
-       
-       searchInput.addEventListener('input', handleSearchInput);
-       searchInput.addEventListener('keydown', function(event) {
-         if (event.key === 'Enter') {
-           event.preventDefault();
-           renderTable();
-         }
-       });
-       
-       // Find button click handler
-       searchButton.addEventListener('click', function() {
-         renderTable();
-       });
-    });
-
-  </script>
+    </script>
 </body>
 </html>
-<!DOCTYPE html>
