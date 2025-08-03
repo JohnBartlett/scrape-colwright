@@ -534,7 +534,7 @@
                     <h1>Hamilton Estate -- Categorize Items</h1>
                 </div>
                 <div class="header-system-info">
-                    <span class="version-number">v1.11.0</span>
+                                            <span class="version-number">v1.12.0</span>
                 </div>
             </div>
             <div class="subtitle">Quick Categorization Workflow</div>
@@ -584,6 +584,18 @@
                             <button class="category-btn" data-disposition="Toss">Toss</button>
                         </div>
                     </div>
+
+                    <div class="category-group">
+                        <label>Person</label>
+                        <div class="category-buttons" id="person-buttons">
+                            <button class="category-btn" data-person="Catharine">Catharine</button>
+                            <button class="category-btn" data-person="John">John</button>
+                            <button class="category-btn" data-person="Sarah">Sarah</button>
+                            <button class="category-btn" data-person="Michael">Michael</button>
+                            <button class="category-btn" data-person="Elizabeth">Elizabeth</button>
+                            <button class="category-btn" data-person="David">David</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -608,6 +620,7 @@
                 <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous | 
                 <b>Types:</b> <code>f</code> Furniture, <code>a</code> Art, <code>b</code> Books, <code>p</code> Plates, <code>v</code> Silver, <code>o</code> Other<br>
                 <b>Disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss | 
+                <b>Person:</b> <code>c</code> Catharine, <code>j</code> John, <code>h</code> Sarah, <code>m</code> Michael, <code>e</code> Elizabeth, <code>v</code> David<br>
                 <b>Save:</b> <code>Enter</code> or <code>Space</code> | 
                 <b>Image:</b> Click to zoom
             </div>
@@ -674,6 +687,7 @@
         let typeSet = new Set();
         let currentType = '';
         let currentDisposition = '';
+        let currentPerson = '';
 
         function toggleZoom() {
             const itemImg = document.getElementById('item-image');
@@ -690,6 +704,9 @@
             } else if (type === 'disposition') {
                 document.querySelectorAll('#disposition-buttons .category-btn').forEach(btn => btn.classList.remove('selected'));
                 currentDisposition = category;
+            } else if (type === 'person') {
+                document.querySelectorAll('#person-buttons .category-btn').forEach(btn => btn.classList.remove('selected'));
+                currentPerson = category;
             }
             
             // Select the clicked button
@@ -718,6 +735,7 @@
             // Update category buttons
             currentType = x.type || '';
             currentDisposition = x.disposition || '';
+            currentPerson = x.person || '';
             
             document.querySelectorAll('#type-buttons .category-btn').forEach(btn => {
                 btn.classList.remove('selected');
@@ -729,6 +747,13 @@
             document.querySelectorAll('#disposition-buttons .category-btn').forEach(btn => {
                 btn.classList.remove('selected');
                 if (btn.dataset.disposition === currentDisposition) {
+                    btn.classList.add('selected');
+                }
+            });
+            
+            document.querySelectorAll('#person-buttons .category-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.dataset.person === currentPerson) {
                     btn.classList.add('selected');
                 }
             });
@@ -748,6 +773,7 @@
                 body: JSON.stringify({
                     type: currentType,
                     disposition: currentDisposition,
+                    person: currentPerson,
                     comments: item.comments || '',
                     disposition_comments: item.disposition_comments || '',
                     review: item.review || '',
@@ -758,6 +784,7 @@
             .then(d => {
                 item.type = currentType;
                 item.disposition = currentDisposition;
+                item.person = currentPerson;
                 
                 // Show save feedback
                 const saveBtn = document.querySelector('.save-btn');
@@ -804,6 +831,14 @@
             if(e.key === 'g') { selectCategory('disposition', 'Gift'); document.querySelector('[data-disposition="Gift"]').click(); }
             if(e.key === 't') { selectCategory('disposition', 'Toss'); document.querySelector('[data-disposition="Toss"]').click(); }
             
+            // Person shortcuts
+            if(e.key === 'c') { selectCategory('person', 'Catharine'); document.querySelector('[data-person="Catharine"]').click(); }
+            if(e.key === 'j') { selectCategory('person', 'John'); document.querySelector('[data-person="John"]').click(); }
+            if(e.key === 'h') { selectCategory('person', 'Sarah'); document.querySelector('[data-person="Sarah"]').click(); }
+            if(e.key === 'm') { selectCategory('person', 'Michael'); document.querySelector('[data-person="Michael"]').click(); }
+            if(e.key === 'e') { selectCategory('person', 'Elizabeth'); document.querySelector('[data-person="Elizabeth"]').click(); }
+            if(e.key === 'v') { selectCategory('person', 'David'); document.querySelector('[data-person="David"]').click(); }
+            
             // Navigation
             if(e.key === 'ArrowRight') nextItem();
             if(e.key === 'ArrowLeft') previousItem();
@@ -826,6 +861,12 @@
             document.querySelectorAll('#disposition-buttons .category-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     selectCategory('disposition', this.dataset.disposition);
+                });
+            });
+            
+            document.querySelectorAll('#person-buttons .category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectCategory('person', this.dataset.person);
                 });
             });
         });

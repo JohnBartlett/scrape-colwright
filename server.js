@@ -25,13 +25,13 @@ app.get("/api/items", (req, res) => {
   res.json(rows);
 });
 
-// API: update comments/type/disposition for a single item
+// API: update comments/type/disposition/person for a single item
 app.post("/api/item/:id", (req, res) => {
   const { id } = req.params;
-  const { comments, type, disposition, disposition_comments, review, review_comments } = req.body;
+  const { comments, type, disposition, person, disposition_comments, review, review_comments } = req.body;
   db.prepare(
-    "UPDATE items SET comments = ?, type = ?, disposition = ?, disposition_comments = ?, review = ?, review_comments = ? WHERE id = ?"
-  ).run(comments || "", type || "", disposition || "", disposition_comments || "", review || "", review_comments || "", id);
+    "UPDATE items SET comments = ?, type = ?, disposition = ?, person = ?, disposition_comments = ?, review = ?, review_comments = ? WHERE id = ?"
+  ).run(comments || "", type || "", disposition || "", person || "", disposition_comments || "", review || "", review_comments || "", id);
   res.json({ ok: true });
 });
 
