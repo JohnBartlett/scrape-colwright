@@ -1,6 +1,6 @@
 {
   "name": "scrape-colwright",
-  "version": "1.10.0",
+  "version": "1.10.3",
   "description": "Inventory scraper and gallery for ColWright.com",
   "main": "api/scraper.js",
   "scripts": {
