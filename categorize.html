@@ -534,7 +534,7 @@
                     <h1>Hamilton Estate -- Categorize Items</h1>
                 </div>
                 <div class="header-system-info">
-                                            <span class="version-number">v1.12.0</span>
+                                            <span class="version-number">v1.12.1</span>
                 </div>
             </div>
             <div class="subtitle">Quick Categorization Workflow</div>
@@ -585,17 +585,15 @@
                         </div>
                     </div>
 
-                    <div class="category-group">
-                        <label>Person</label>
-                        <div class="category-buttons" id="person-buttons">
-                            <button class="category-btn" data-person="Catharine">Catharine</button>
-                            <button class="category-btn" data-person="John">John</button>
-                            <button class="category-btn" data-person="Sarah">Sarah</button>
-                            <button class="category-btn" data-person="Michael">Michael</button>
-                            <button class="category-btn" data-person="Elizabeth">Elizabeth</button>
-                            <button class="category-btn" data-person="David">David</button>
-                        </div>
-                    </div>
+                                         <div class="category-group">
+                         <label>Person</label>
+                         <div class="category-buttons" id="person-buttons">
+                             <button class="category-btn" data-person="Catharine">Catharine</button>
+                             <button class="category-btn" data-person="Caroline">Caroline</button>
+                             <button class="category-btn" data-person="John">John</button>
+                             <button class="category-btn" data-person="Colwright">Colwright</button>
+                         </div>
+                     </div>
                 </div>
             </div>
         </div>
@@ -620,7 +618,7 @@
                 <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous | 
                 <b>Types:</b> <code>f</code> Furniture, <code>a</code> Art, <code>b</code> Books, <code>p</code> Plates, <code>v</code> Silver, <code>o</code> Other<br>
                 <b>Disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss | 
-                <b>Person:</b> <code>c</code> Catharine, <code>j</code> John, <code>h</code> Sarah, <code>m</code> Michael, <code>e</code> Elizabeth, <code>v</code> David<br>
+                                 <b>Person:</b> <code>c</code> Catharine, <code>a</code> Caroline, <code>j</code> John, <code>w</code> Colwright<br>
                 <b>Save:</b> <code>Enter</code> or <code>Space</code> | 
                 <b>Image:</b> Click to zoom
             </div>
@@ -833,11 +831,9 @@
             
             // Person shortcuts
             if(e.key === 'c') { selectCategory('person', 'Catharine'); document.querySelector('[data-person="Catharine"]').click(); }
+            if(e.key === 'a') { selectCategory('person', 'Caroline'); document.querySelector('[data-person="Caroline"]').click(); }
             if(e.key === 'j') { selectCategory('person', 'John'); document.querySelector('[data-person="John"]').click(); }
-            if(e.key === 'h') { selectCategory('person', 'Sarah'); document.querySelector('[data-person="Sarah"]').click(); }
-            if(e.key === 'm') { selectCategory('person', 'Michael'); document.querySelector('[data-person="Michael"]').click(); }
-            if(e.key === 'e') { selectCategory('person', 'Elizabeth'); document.querySelector('[data-person="Elizabeth"]').click(); }
-            if(e.key === 'v') { selectCategory('person', 'David'); document.querySelector('[data-person="David"]').click(); }
+            if(e.key === 'w') { selectCategory('person', 'Colwright'); document.querySelector('[data-person="Colwright"]').click(); }
             
             // Navigation
             if(e.key === 'ArrowRight') nextItem();
