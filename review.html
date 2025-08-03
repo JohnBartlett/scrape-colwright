@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Review</title>
+    <title>Hamilton Estate -- Review Items</title>
     <style>
         * {
             margin: 0;
@@ -517,7 +517,7 @@
 <body>
     <div class="container">
         <header>
-            <h1>Hamilton Estate -- Review Items <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.10.0</span></h1>
+            <h1>Hamilton Estate -- Review Items <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.10.2</span></h1>
             <div class="subtitle">Detailed Review & Comments Workflow</div>
             <div class="header-actions">
                 <a href="index.html" class="header-btn">Back to Gallery</a>
@@ -684,6 +684,10 @@
                         <label class="filter-checkbox">
                             <input type="checkbox" id="needs-review-filter">
                             <span>Needs review</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" id="no-picture-filter">
+                            <span>No picture</span>
                         </label>
                     </div>
                 </div>
@@ -858,6 +862,7 @@
             const checkedTypes = getCheckedTypes();
             const hasCommentsFilter = document.getElementById('has-comments-filter').checked;
             const needsReviewFilter = document.getElementById('needs-review-filter').checked;
+            const noPictureFilter = document.getElementById('no-picture-filter').checked;
             
             filtered = items.filter(x => {
                 let passesType = true;
@@ -883,13 +888,18 @@
                     passesReviewFilter = hasComments || hasReviewCheckbox;
                 }
                 
+                let passesNoPictureFilter = true;
+                if (noPictureFilter) {
+                    passesNoPictureFilter = !x.image_file && !x.image_url;
+                }
+                
                 let passesQ = !q ||
                     (x.description||'').toLowerCase().includes(q) ||
                     (x.client||'').toLowerCase().includes(q) ||
                     (x.item_id||'').toLowerCase().includes(q) ||
                     (x.id+"").toLowerCase().includes(q);
                 
-                return passesType && passesCommentsFilter && passesReviewFilter && passesQ;
+                return passesType && passesCommentsFilter && passesReviewFilter && passesNoPictureFilter && passesQ;
             });
             idx = 0;
             show(idx);
@@ -950,6 +960,7 @@
         // Add event listeners for status filters
         document.getElementById('has-comments-filter').addEventListener('change', applyFiltersAndSearch);
         document.getElementById('needs-review-filter').addEventListener('change', applyFiltersAndSearch);
+        document.getElementById('no-picture-filter').addEventListener('change', applyFiltersAndSearch);
 
         function renderTypeFilters() {
             typeSet = new Set();
