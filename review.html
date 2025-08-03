@@ -574,9 +574,9 @@
                 <div class="header-title">
                     <h1>Hamilton Estate -- Review Items</h1>
                 </div>
-                <div class="header-system-info">
-                    <span class="version-number">v1.11.0</span>
-                </div>
+                                    <div class="header-system-info">
+                        <span class="version-number">v1.11.1</span>
+                    </div>
             </div>
             <div class="subtitle">Detailed Review & Comments Workflow</div>
             <div class="header-actions">
@@ -749,6 +749,10 @@
                         <label class="filter-checkbox">
                             <input type="checkbox" id="no-picture-filter">
                             <span>No picture</span>
+                        </label>
+                        <label class="filter-checkbox">
+                            <input type="checkbox" id="uncategorized-filter">
+                            <span>Uncategorized</span>
                         </label>
                     </div>
                 </div>
@@ -924,6 +928,7 @@
             const hasCommentsFilter = document.getElementById('has-comments-filter').checked;
             const needsReviewFilter = document.getElementById('needs-review-filter').checked;
             const noPictureFilter = document.getElementById('no-picture-filter').checked;
+            const uncategorizedFilter = document.getElementById('uncategorized-filter').checked;
             
             filtered = items.filter(x => {
                 let passesType = true;
@@ -954,13 +959,19 @@
                     passesNoPictureFilter = !x.image_file && !x.image_url;
                 }
                 
+                let passesUncategorizedFilter = true;
+                if (uncategorizedFilter) {
+                    const isCategorized = (x.type && x.type.trim()) && (x.disposition && x.disposition.trim());
+                    passesUncategorizedFilter = !isCategorized;
+                }
+                
                 let passesQ = !q ||
                     (x.description||'').toLowerCase().includes(q) ||
                     (x.client||'').toLowerCase().includes(q) ||
                     (x.item_id||'').toLowerCase().includes(q) ||
                     (x.id+"").toLowerCase().includes(q);
                 
-                return passesType && passesCommentsFilter && passesReviewFilter && passesNoPictureFilter && passesQ;
+                return passesType && passesCommentsFilter && passesReviewFilter && passesNoPictureFilter && passesUncategorizedFilter && passesQ;
             });
             idx = 0;
             show(idx);
@@ -1022,6 +1033,7 @@
         document.getElementById('has-comments-filter').addEventListener('change', applyFiltersAndSearch);
         document.getElementById('needs-review-filter').addEventListener('change', applyFiltersAndSearch);
         document.getElementById('no-picture-filter').addEventListener('change', applyFiltersAndSearch);
+        document.getElementById('uncategorized-filter').addEventListener('change', applyFiltersAndSearch);
 
         function renderTypeFilters() {
             typeSet = new Set();
