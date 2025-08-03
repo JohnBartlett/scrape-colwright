@@ -363,6 +363,39 @@
             color: #666;
             font-style: italic;
         }
+
+        /* Image styling */
+        .img-thumbs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .img-thumb, .img-single {
+            max-width: 80px;
+            max-height: 80px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+
+        .img-thumb:hover, .img-single:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .img-thumb.zoomed, .img-single.zoomed {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(2);
+            z-index: 1000;
+            max-width: 90vw;
+            max-height: 90vh;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            border-radius: 12px;
+        }
     </style>
 </head>
 <body>
@@ -373,7 +406,7 @@
                     <h1>Hamilton Estate -- Gallery View</h1>
                 </div>
                 <div class="header-system-info">
-                    <span class="version-number">v1.11.0</span>
+                                            <span class="version-number">v1.12.2</span>
                 </div>
             </div>
             <div class="subtitle">Browse All Inventory Items</div>
@@ -429,6 +462,10 @@
         let filteredTypes = new Set();
         let filterNoType = false;
 
+        function toggleZoom(imgElement) {
+            imgElement.classList.toggle('zoomed');
+        }
+
         function html(s) {
             return (s==null ? "" : (""+s).replace(/[&<>"']/g, c => ({
                 '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
@@ -439,14 +476,11 @@
             if (Array.isArray(row.image_files) && row.image_files.length) {
                 return '<div class="img-thumbs">' +
                     row.image_files.map(img =>
-                        `<a href="/${html(img)}" target="_blank" title="View image">
-                            <img src="/${html(img)}" class="img-thumb" alt="item image">
-                        </a>`
+                        `<img src="/${html(img)}" class="img-thumb" alt="item image" onclick="toggleZoom(this)" title="Click to zoom">`
                     ).join('') + '</div>';
             }
             if (row.image_file && row.image_file !== '') {
-                return `<a href="/${html(row.image_file)}" target="_blank">
-                        <img src="/${html(row.image_file)}" class="img-single" alt="item image"></a>`;
+                return `<img src="/${html(row.image_file)}" class="img-single" alt="item image" onclick="toggleZoom(this)" title="Click to zoom">`;
             }
             return `<span style="color:#888;">No image</span>`;
         }
