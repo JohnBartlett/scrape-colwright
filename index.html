@@ -24,8 +24,8 @@
       font-size: 2.15rem;
       letter-spacing: 2px;
       text-align: center;
-      margin-top: 36px;
-      margin-bottom: 20px;
+      margin-top: -28px;
+      margin-bottom: 4px;
     }
     #topbar-link {
       width: 96%;
@@ -54,6 +54,13 @@
     #search-container {
       text-align: center;
       margin-bottom: 12px;
+    }
+    #item-count {
+      text-align: center;
+      margin: 8px 0;
+      font-size: 0.95em;
+      color: #3861b4;
+      font-weight: 500;
     }
     #type-filters {
       display: flex;
@@ -95,6 +102,20 @@
     #item-search:focus {
       border: 2px solid #4871e8;
       outline: none;
+    }
+    #item-search-btn {
+      padding: 6px 18px;
+      border: none;
+      background: #4e77de;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.18s;
+      margin-left: 8px;
+    }
+    #item-search-btn:hover {
+      background: #2848b6;
     }
     table {
       border-collapse: collapse;
@@ -183,10 +204,12 @@
   <div id="topbar-link">
     <a href="review.html" target="_blank" title="Go to Review Workflow">→ Review Workflow</a>
   </div>
-  <h1>Inventory Items <span style="font-size: 0.6em; color: #666; font-weight: normal;">v1.8.0</span></h1>
+  <h1>Inventory Items <span style="font-size: 0.6em; color: #666; font-weight: normal;">v1.8.8</span></h1>
   <div id="search-container">
     <input id="item-search" type="text" placeholder="Search items by any info..." autocomplete="off">
+    <button type="button" id="item-search-btn">Find</button>
   </div>
+  <div id="item-count"></div>
   <div id="type-filters"></div>
   <table id="inventory">
     <thead>
@@ -298,6 +321,7 @@
       const query = searchInput.value.trim().toLowerCase();
       const { checkedTypes, activeNoType, showAll } = getActiveTypeFilters();
 
+      let visibleCount = 0;
       items.forEach(row => {
         // Search filter
         if (query) {
@@ -314,6 +338,7 @@
           const noType = !typeVal;
           if (!((checkedTypes.has(typeVal)) || (activeNoType && noType))) return;
         }
+        visibleCount++;
         tbody.innerHTML += `<tr class="data-row">
           <td>
             <a href="review.html?item=${encodeURIComponent(row.item_id || '')}" target="_blank" title="Review this item">${html(row.item_id || '')}</a>
@@ -327,6 +352,14 @@
           <td>${renderImages(row)}</td>
         </tr>`;
       });
+
+      // Update item count display
+      const countElement = document.getElementById('item-count');
+      if (visibleCount === items.length) {
+        countElement.textContent = `Showing all ${items.length} items`;
+      } else {
+        countElement.textContent = `Showing ${visibleCount} of ${items.length} items`;
+      }
 
       // Attach sort events after every render
       document.querySelectorAll('.sort-arrow').forEach(el => {
@@ -388,18 +421,26 @@
         renderTable();
       });
 
-      // SEARCH filter logic and Enter handler
-      const searchInput = document.getElementById('item-search');
-      function handleSearchInput() {
-        renderTable();
-      }
-      searchInput.addEventListener('input', handleSearchInput);
-      searchInput.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          renderTable();
-        }
-      });
+             // SEARCH filter logic and Enter handler
+       const searchInput = document.getElementById('item-search');
+       const searchButton = document.getElementById('item-search-btn');
+       
+       function handleSearchInput() {
+         renderTable();
+       }
+       
+       searchInput.addEventListener('input', handleSearchInput);
+       searchInput.addEventListener('keydown', function(event) {
+         if (event.key === 'Enter') {
+           event.preventDefault();
+           renderTable();
+         }
+       });
+       
+       // Find button click handler
+       searchButton.addEventListener('click', function() {
+         renderTable();
+       });
     });
 
   </script>

@@ -11,6 +11,10 @@ const app = express();
 const db = new Database("inventory.db");
 const PORT = process.env.PORT || 3000;
 
+// Security: Only allow localhost access by default
+// Change '127.0.0.1' to '0.0.0.0' if you need remote network access
+const HOST = process.env.HOST || '127.0.0.1';
+
 // Serve static files like index.html/review.html/images
 app.use(express.static(__dirname));
 app.use(bodyParser.json());
@@ -31,8 +35,14 @@ app.post("/api/item/:id", (req, res) => {
   res.json({ ok: true });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, HOST, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+  if (HOST === '0.0.0.0') {
+    console.log(`Server also accessible at http://[your-ip]:${PORT}`);
+    console.log(`⚠️  WARNING: Server is accessible to others on the network`);
+  } else {
+    console.log(`🔒 Server restricted to localhost only`);
+  }
   console.log(`Note: On hotel networks, local network access may be restricted`);
   console.log(`Use ngrok for remote access: ngrok http ${PORT}`);
 });

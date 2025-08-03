@@ -23,6 +23,13 @@
       margin-bottom: 10px;
       margin-top: 10px;
     }
+    #item-count {
+      text-align: center;
+      margin: 8px 0;
+      font-size: 0.95em;
+      color: #3861b4;
+      font-weight: 500;
+    }
     #review-search {
       width: 200px;
       padding: 6px 12px;
@@ -249,16 +256,46 @@
       background: #bed8ff;
       color: #183678;
     }
+    #status-filters {
+      text-align: center;
+      margin-bottom: 4px;
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 11px;
+    }
+    .status-filter-label {
+      font-size: 1em;
+      padding: 5px 10px;
+      border-radius: 7px;
+      background: #e8eefa;
+      border: 1px solid #b8c7e9;
+      color: #253050;
+      cursor: pointer;
+      display: flex; align-items: center; gap: 3px;
+      transition: background 0.18s;
+    }
+    .status-filter-label input[type="checkbox"] {
+      accent-color: #4871e8;
+      margin-right: 3px;
+    }
+    .status-filter-label:hover {
+      background: #bed8ff;
+      color: #183678;
+    }
     #cheatsheet {
-      margin: 16px auto 0 auto;
+      margin: 12px auto 0 auto;
       border-radius: 7px;
       background: #fcfcfc;
       box-shadow: 0 1px 4px #99bbee18;
-      padding: 11px 18px;
+      padding: 8px 16px;
       color: #234;
-      max-width: 680px;
-      font-size: .98em;
-      line-height: 1.75;
+      max-width: 90vw;
+      width: 100%;
+      font-size: .92em;
+      line-height: 1.5;
+      text-align: center;
     }
     #cheatsheet code { background: #f7f9fa; border-radius: 4px; padding: 1px 5px; }
     @media (max-width: 950px) {
@@ -270,19 +307,39 @@
       #item-img { max-width: 94vw; }
       #desc { max-width: 94vw; }
       #right-section { max-width: unset; }
+      #cheatsheet {
+        max-width: 95vw;
+        font-size: .90em;
+      }
     }
     @media (max-width: 540px) {
       #review-layout { padding: 4px 0vw; }
+      #cheatsheet {
+        max-width: 98vw;
+        font-size: .85em;
+        padding: 6px 12px;
+        margin: 8px auto 0 auto;
+        line-height: 1.4;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Inventory Review <span style="font-size: 0.6em; color: #666; font-weight: normal;">v1.8.0</span></h1>
+  <h1>Inventory Review <span style="font-size: 0.6em; color: #666; font-weight: normal;">v1.8.8</span></h1>
   <div class="search-box">
     <input id="review-search" type="text" placeholder="Jump/search by ItemID, description, client...">
     <button type="button" id="review-search-btn">Find</button>
   </div>
+  <div id="item-count"></div>
   <div id="type-filters-review"></div>
+  <div id="status-filters">
+    <label class="status-filter-label">
+      <input type="checkbox" id="has-comments-filter"> Has comments
+    </label>
+    <label class="status-filter-label">
+      <input type="checkbox" id="needs-review-filter"> Needs review
+    </label>
+  </div>
   <div id="review-layout">
     <div id="img-section">
       <div id="desc"></div>
@@ -334,19 +391,12 @@
   </div>
   <div id="cheatsheet">
     <strong>Keyboard Cheatsheet:</strong><br>
-    <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous<br>
-    <b>Set type by key:</b> 
-    <code>f</code> Furniture, 
-    <code>a</code> Art, 
-    <code>b</code> Books, 
-    <code>p</code> Plates, 
-    <code>v</code> Silver, 
-    <code>o</code> Other, 
-    <code>n</code> No Type (filter)<br>
-    <b>Set disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss<br>
-              <b>Other:</b> <code>Enter</code> in search field — search by ItemID, description, client &amp; refilter<br>
-     <b>Image:</b> Click image to zoom in/out (2x size)<br>
-     <b>Checkbox filter above:</b> Filters the "Type" of displayed items (may combine with search)
+    <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous | 
+    <b>Types:</b> <code>f</code> Furniture, <code>a</code> Art, <code>b</code> Books, <code>p</code> Plates, <code>v</code> Silver, <code>o</code> Other, <code>n</code> No Type<br>
+    <b>Disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss | 
+    <b>Search:</b> <code>Enter</code> in search field | 
+    <b>Image:</b> Click to zoom | 
+    <b>Filters:</b> Checkboxes filter by Type, Comments, and Review status
   </div>
 <script>
 let items = [];
@@ -409,7 +459,7 @@ function show(i) {
   });
   document.getElementById('review-comments').value = x.review_comments || '';
   // Show item ID in status when item is loaded
-  document.getElementById('status').textContent = `Showing item: ${x.item_id || 'Unknown'}`;
+  document.getElementById('status').textContent = `Showing item: ${x.item_id || 'Unknown'} (${idx + 1} of ${filtered.length})`;
 }
 
 function saveCurrent(callback) {
@@ -486,6 +536,9 @@ document.addEventListener('keydown', function(e) {
 function applyFiltersAndSearch() {
   const q = (document.getElementById('review-search').value || '').toLowerCase().trim();
   const checkedTypes = getCheckedTypes();
+  const hasCommentsFilter = document.getElementById('has-comments-filter').checked;
+  const needsReviewFilter = document.getElementById('needs-review-filter').checked;
+  
   filtered = items.filter(x => {
     let passesType = true;
     if(checkedTypes.length > 0) {
@@ -495,17 +548,43 @@ function applyFiltersAndSearch() {
         passesType = x.type && checkedTypes.includes(x.type);
       }
     }
+    
+    let passesCommentsFilter = true;
+    if (hasCommentsFilter) {
+      passesCommentsFilter = (x.disposition_comments && x.disposition_comments.trim()) || 
+                            (x.review_comments && x.review_comments.trim());
+    }
+    
+    let passesReviewFilter = true;
+    if (needsReviewFilter) {
+      const hasComments = (x.disposition_comments && x.disposition_comments.trim()) || 
+                         (x.review_comments && x.review_comments.trim());
+      const hasReviewCheckbox = (x.review && x.review.trim());
+      passesReviewFilter = hasComments || hasReviewCheckbox;
+    }
+    
     let passesQ = !q ||
         (x.description||'').toLowerCase().includes(q) ||
         (x.client||'').toLowerCase().includes(q) ||
         (x.item_id||'').toLowerCase().includes(q) ||
         (x.id+"").toLowerCase().includes(q);
-    return passesType && passesQ;
+    
+    return passesType && passesCommentsFilter && passesReviewFilter && passesQ;
   });
   idx = 0;
   show(idx);
+  
+  // Update item count display
+  const countElement = document.getElementById('item-count');
+  if (filtered.length === items.length) {
+    countElement.textContent = `Showing all ${items.length} items`;
+  } else {
+    countElement.textContent = `Showing ${filtered.length} of ${items.length} items`;
+  }
+  
+  // Update status message
   document.getElementById('status').textContent = filtered.length
-    ? ("Showing " + filtered.length + " result(s)")
+    ? `Showing item: ${filtered[idx]?.item_id || 'Unknown'} (${idx + 1} of ${filtered.length})`
     : "No match found.";
 }
 
@@ -513,6 +592,10 @@ document.getElementById('review-search-btn').onclick = applyFiltersAndSearch;
 document.getElementById('review-search').addEventListener('keydown', function(e) {
   if (e.key === 'Enter') applyFiltersAndSearch();
 });
+
+// Add event listeners for status filters
+document.getElementById('has-comments-filter').addEventListener('change', applyFiltersAndSearch);
+document.getElementById('needs-review-filter').addEventListener('change', applyFiltersAndSearch);
 
 function renderTypeFilters() {
   typeSet = new Set();
@@ -551,7 +634,7 @@ fetch('/api/items').then(r=>r.json()).then(data=>{
       filtered = [items[targetIndex]];
       idx = 0;
       show(idx);
-      document.getElementById('status').textContent = `Showing item: ${itemParam}`;
+      document.getElementById('status').textContent = `Showing item: ${itemParam} (1 of 1)`;
     } else {
       // Item not found, show all items
       show(idx);
@@ -561,6 +644,10 @@ fetch('/api/items').then(r=>r.json()).then(data=>{
     // No item parameter, show all items
     show(idx);
   }
+  
+  // Initialize item count display
+  const countElement = document.getElementById('item-count');
+  countElement.textContent = `Showing all ${items.length} items`;
 });
 
 </script>
