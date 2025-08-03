@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ColWright Inventory</title>
+    <title>Hamilton Estate -- WPB Content</title>
     <style>
         * {
             margin: 0;
@@ -43,12 +43,24 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            text-align: center;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
         .header-actions {
             text-align: center;
             margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
 
-        .review-btn {
+        .header-btn {
             background: rgba(255,255,255,0.2);
             color: white;
             border: 2px solid rgba(255,255,255,0.3);
@@ -60,7 +72,7 @@
             display: inline-block;
         }
 
-        .review-btn:hover {
+        .header-btn:hover {
             background: rgba(255,255,255,0.3);
             border-color: rgba(255,255,255,0.5);
             transform: translateY(-2px);
@@ -331,9 +343,11 @@
 <body>
     <div class="container">
         <header>
-            <h1>Inventory Items <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.9.1</span></h1>
+            <h1>Hamilton Estate -- WPB Content <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.10.0</span></h1>
+            <div class="subtitle">Inventory Management System</div>
             <div class="header-actions">
-                <a href="review.html" target="_blank" class="review-btn">Review Workflow</a>
+                <a href="review.html" target="_blank" class="header-btn">Review Items</a>
+                <a href="categorize.html" target="_blank" class="header-btn">Categorize Items</a>
             </div>
         </header>
 

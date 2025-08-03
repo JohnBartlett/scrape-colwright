@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Review</title>
+    <title>Hamilton Estate -- Categorize Items</title>
     <style>
         * {
             margin: 0;
@@ -41,6 +41,39 @@
             letter-spacing: 2px;
             margin-bottom: 10px;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .header-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
         }
 
         .item-display {
@@ -136,19 +169,19 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.4);
         }
 
-        .form-section {
+        .categorization-section {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .form-group {
+        .category-group {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
 
-        .form-group label {
+        .category-group label {
             font-weight: 600;
             color: #555;
             font-size: 14px;
@@ -156,59 +189,32 @@
             letter-spacing: 0.5px;
         }
 
-        .form-group input[type="text"],
-        .form-group textarea {
-            padding: 12px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background: #fafbfc;
-        }
-
-        .form-group input[type="text"]:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .checkbox-group {
+        .category-buttons {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin-top: 5px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
             gap: 8px;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-            cursor: pointer;
         }
 
-        .checkbox-item:hover {
+        .category-btn {
             background: #f8f9fa;
+            border: 2px solid #e1e5e9;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
         }
 
-        .checkbox-item input[type="checkbox"] {
-            width: 16px;
-            height: 16px;
-            accent-color: #667eea;
+        .category-btn:hover {
+            background: #e9ecef;
+            border-color: #667eea;
         }
 
-        .checkbox-item input[type="checkbox"]:checked + span {
-            color: #667eea;
-            font-weight: 600;
+        .category-btn.selected {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
         }
 
         .save-section {
@@ -271,7 +277,7 @@
             margin-bottom: 20px;
         }
 
-        #review-search {
+        #categorize-search {
             flex: 1;
             padding: 12px 18px;
             border: 2px solid #e1e5e9;
@@ -281,14 +287,14 @@
             background: #fafbfc;
         }
 
-        #review-search:focus {
+        #categorize-search:focus {
             outline: none;
             border-color: #667eea;
             background: white;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        #review-search-btn {
+        #categorize-search-btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -300,7 +306,7 @@
             white-space: nowrap;
         }
 
-        #review-search-btn:hover {
+        #categorize-search-btn:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
@@ -472,12 +478,12 @@
                 flex-direction: column;
             }
             
-            #review-search-btn {
+            #categorize-search-btn {
                 width: 100%;
             }
             
-            .checkbox-group {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            .category-buttons {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             }
         }
 
@@ -498,11 +504,11 @@
 <body>
     <div class="container">
         <header>
-            <h1>Hamilton Estate -- Review Items <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.10.0</span></h1>
-            <div class="subtitle">Detailed Review & Comments Workflow</div>
+            <h1>Hamilton Estate -- Categorize Items <span style="font-size: 0.6em; color: rgba(255,255,255,0.8); font-weight: normal;">v1.10.0</span></h1>
+            <div class="subtitle">Quick Categorization Workflow</div>
             <div class="header-actions">
                 <a href="index.html" class="header-btn">Back to Gallery</a>
-                <a href="categorize.html" target="_blank" class="header-btn">Categorize Items</a>
+                <a href="review.html" target="_blank" class="header-btn">Review Items</a>
             </div>
         </header>
 
@@ -523,105 +529,34 @@
                     <img id="item-image" class="item-image" src="" alt="Item image" onclick="toggleZoom()">
                 </div>
                 
-                <div class="form-section">
-                    <div class="form-group">
+                <div class="categorization-section">
+                    <div class="category-group">
                         <label>Type</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="type-furniture" value="Furniture">
-                                <span>Furniture</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="type-art" value="Art">
-                                <span>Art</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="type-books" value="Books">
-                                <span>Books</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="type-plates" value="Plates">
-                                <span>Plates</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="type-silver" value="Silver">
-                                <span>Silver</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="type-other" value="Other">
-                                <span>Other</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="type-none" value="">
-                                <span>No Type</span>
-                            </label>
+                        <div class="category-buttons" id="type-buttons">
+                            <button class="category-btn" data-type="Furniture">Furniture</button>
+                            <button class="category-btn" data-type="Art">Art</button>
+                            <button class="category-btn" data-type="Books">Books</button>
+                            <button class="category-btn" data-type="Plates">Plates</button>
+                            <button class="category-btn" data-type="Silver">Silver</button>
+                            <button class="category-btn" data-type="Other">Other</button>
                         </div>
                     </div>
 
-                    <div class="form-group">
+                    <div class="category-group">
                         <label>Disposition</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="disposition-sell" value="Sell">
-                                <span>Sell</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="disposition-donate" value="Donate">
-                                <span>Donate</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="disposition-gift" value="Gift">
-                                <span>Gift</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="disposition-toss" value="Toss">
-                                <span>Toss</span>
-                            </label>
+                        <div class="category-buttons" id="disposition-buttons">
+                            <button class="category-btn" data-disposition="Sell">Sell</button>
+                            <button class="category-btn" data-disposition="Donate">Donate</button>
+                            <button class="category-btn" data-disposition="Gift">Gift</button>
+                            <button class="category-btn" data-disposition="Toss">Toss</button>
                         </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="disposition-comments">Disposition Comments</label>
-                        <textarea id="disposition-comments" placeholder="Enter disposition comments..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Review</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="review-john" value="John">
-                                <span>John</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="review-catharine" value="Catharine">
-                                <span>Catharine</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="review-caroline" value="Caroline">
-                                <span>Caroline</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" id="review-colwright" value="Colwright">
-                                <span>Colwright</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="review-comments">Review Comments</label>
-                        <textarea id="review-comments" placeholder="Enter review comments..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="comments">General Comments</label>
-                        <textarea id="comments" placeholder="Enter general comments..."></textarea>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="save-section">
-            <button class="save-btn" onclick="saveCurrent()">Save Changes</button>
+            <button class="save-btn" onclick="saveCurrent()">Save & Continue</button>
         </div>
 
         <div class="search-section">
@@ -631,18 +566,17 @@
             </div>
             
             <div id="search-container">
-                <input id="review-search" type="text" placeholder="Search items by any info..." autocomplete="off">
-                <button type="button" id="review-search-btn">Find</button>
+                <input id="categorize-search" type="text" placeholder="Search items by any info..." autocomplete="off">
+                <button type="button" id="categorize-search-btn">Find</button>
             </div>
 
             <div id="cheatsheet">
-                <strong>Keyboard Cheatsheet:</strong><br>
+                <strong>Keyboard Shortcuts:</strong><br>
                 <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous | 
-                <b>Types:</b> <code>f</code> Furniture, <code>a</code> Art, <code>b</code> Books, <code>p</code> Plates, <code>v</code> Silver, <code>o</code> Other, <code>n</code> No Type<br>
+                <b>Types:</b> <code>f</code> Furniture, <code>a</code> Art, <code>b</code> Books, <code>p</code> Plates, <code>v</code> Silver, <code>o</code> Other<br>
                 <b>Disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss | 
-                <b>Search:</b> <code>Enter</code> in search field | 
-                <b>Image:</b> Click to zoom | 
-                <b>Filters:</b> Checkboxes filter by Type, Comments, and Review status
+                <b>Save:</b> <code>Enter</code> or <code>Space</code> | 
+                <b>Image:</b> Click to zoom
             </div>
         </div>
 
@@ -659,12 +593,12 @@
                     <label>Status Filters</label>
                     <div id="status-filters">
                         <label class="filter-checkbox">
-                            <input type="checkbox" id="has-comments-filter">
-                            <span>Has comments</span>
+                            <input type="checkbox" id="uncategorized-filter">
+                            <span>Uncategorized</span>
                         </label>
                         <label class="filter-checkbox">
-                            <input type="checkbox" id="needs-review-filter">
-                            <span>Needs review</span>
+                            <input type="checkbox" id="categorized-filter">
+                            <span>Categorized</span>
                         </label>
                     </div>
                 </div>
@@ -683,13 +617,12 @@
                             <th>Description</th>
                             <th>Type</th>
                             <th>Disposition</th>
-                            <th>Review</th>
-                            <th>Comments</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="results-body">
                         <tr>
-                            <td colspan="6" class="loading">Loading items...</td>
+                            <td colspan="5" class="loading">Loading items...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -702,35 +635,29 @@
         let filtered = [];
         let idx = 0;
         let typeSet = new Set();
+        let currentType = '';
+        let currentDisposition = '';
 
-        function singleCheckboxGroup(name) {
-            const boxes = Array.from(document.querySelectorAll(`input[value]`)).filter(box => {
-                if (name === 'type') return box.id.startsWith('type-');
-                if (name === 'disposition') return box.id.startsWith('disposition-');
-                if (name === 'review') return box.id.startsWith('review-');
-                return false;
-            });
-            boxes.forEach(box => {
-                box.addEventListener('change', function() {
-                    if (this.checked) {
-                        boxes.forEach(b => { if (b !== this) b.checked = false; });
-                    }
-                });
-            });
-        }
-        
         function toggleZoom() {
             const itemImg = document.getElementById('item-image');
             if (itemImg) {
                 itemImg.classList.toggle('zoomed');
             }
         }
-        
-        window.addEventListener("DOMContentLoaded", function() {
-            singleCheckboxGroup("type");
-            singleCheckboxGroup("disposition");
-            singleCheckboxGroup("review");
-        });
+
+        function selectCategory(type, category) {
+            // Remove previous selections
+            if (type === 'type') {
+                document.querySelectorAll('#type-buttons .category-btn').forEach(btn => btn.classList.remove('selected'));
+                currentType = category;
+            } else if (type === 'disposition') {
+                document.querySelectorAll('#disposition-buttons .category-btn').forEach(btn => btn.classList.remove('selected'));
+                currentDisposition = category;
+            }
+            
+            // Select the clicked button
+            event.target.classList.add('selected');
+        }
 
         function show(i) {
             const itemDisplay = document.getElementById('item-display');
@@ -751,20 +678,22 @@
             itemImg.src = x.image_file || x.image_url || '';
             itemImg.classList.remove('zoomed');
             
-            // Update form fields
-            document.getElementById('comments').value = x.comments || '';
-            document.getElementById('disposition-comments').value = x.disposition_comments || '';
-            document.getElementById('review-comments').value = x.review_comments || '';
+            // Update category buttons
+            currentType = x.type || '';
+            currentDisposition = x.disposition || '';
             
-            // Update checkboxes
-            document.querySelectorAll('input[id^="type-"]').forEach(cb => {
-                cb.checked = (x.type === cb.value);
+            document.querySelectorAll('#type-buttons .category-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.dataset.type === currentType) {
+                    btn.classList.add('selected');
+                }
             });
-            document.querySelectorAll('input[id^="disposition-"]').forEach(cb => {
-                cb.checked = (x.disposition === cb.value);
-            });
-            document.querySelectorAll('input[id^="review-"]').forEach(cb => {
-                cb.checked = (x.review || '').split(',').includes(cb.value);
+            
+            document.querySelectorAll('#disposition-buttons .category-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.dataset.disposition === currentDisposition) {
+                    btn.classList.add('selected');
+                }
             });
             
             // Update navigation buttons
@@ -775,26 +704,23 @@
         function saveCurrent(callback) {
             if (!filtered.length) return;
             const item = filtered[idx];
-            const comments = document.getElementById('comments').value;
-            const type = Array.from(document.querySelectorAll('input[id^="type-"]')).find(cb => cb.checked)?.value || '';
-            const disposition = Array.from(document.querySelectorAll('input[id^="disposition-"]')).find(cb => cb.checked)?.value || '';
-            const dispositionComments = document.getElementById('disposition-comments').value || '';
-            const review = Array.from(document.querySelectorAll('input[id^="review-"]')).filter(cb => cb.checked).map(cb => cb.value).join(',');
-            const reviewComments = document.getElementById('review-comments').value || '';
             
             fetch('/api/item/' + item.id, {
                 method: "POST",
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({comments, type, disposition, disposition_comments: dispositionComments, review, review_comments: reviewComments}),
+                body: JSON.stringify({
+                    type: currentType,
+                    disposition: currentDisposition,
+                    comments: item.comments || '',
+                    disposition_comments: item.disposition_comments || '',
+                    review: item.review || '',
+                    review_comments: item.review_comments || ''
+                }),
             })
             .then(res => res.json())
             .then(d => {
-                item.comments = comments;
-                item.type = type;
-                item.disposition = disposition;
-                item.disposition_comments = dispositionComments;
-                item.review = review;
-                item.review_comments = reviewComments;
+                item.type = currentType;
+                item.disposition = currentDisposition;
                 
                 // Show save feedback
                 const saveBtn = document.querySelector('.save-btn');
@@ -823,37 +749,55 @@
             }
         }
 
-        function getCheckedTypes() {
-            const checked = Array.from(document.querySelectorAll('input.type-filter[type=checkbox]:checked'));
-            const types = checked.map(cb => cb.value);
-            return types;
-        }
-
         document.addEventListener('keydown', function(e) {
             const tag = document.activeElement.tagName;
             if(tag === "TEXTAREA" || (tag === "INPUT" && document.activeElement.type === "text")) return;
 
-            function toggleBox(id) { const box = document.getElementById(id); if (box) box.checked = !box.checked; }
-            if(e.key === 'f') toggleBox('type-furniture');
-            if(e.key === 'a') toggleBox('type-art');
-            if(e.key === 'b') toggleBox('type-books');
-            if(e.key === 'p') toggleBox('type-plates');
-            if(e.key === 'o') toggleBox('type-other');
-            if(e.key === 'v') toggleBox('type-silver');
-            if(e.key === 's') toggleBox('disposition-sell');
-            if(e.key === 'd') toggleBox('disposition-donate');
-            if(e.key === 'g') toggleBox('disposition-gift');
-            if(e.key === 't') toggleBox('disposition-toss');
+            // Type shortcuts
+            if(e.key === 'f') { selectCategory('type', 'Furniture'); document.querySelector('[data-type="Furniture"]').click(); }
+            if(e.key === 'a') { selectCategory('type', 'Art'); document.querySelector('[data-type="Art"]').click(); }
+            if(e.key === 'b') { selectCategory('type', 'Books'); document.querySelector('[data-type="Books"]').click(); }
+            if(e.key === 'p') { selectCategory('type', 'Plates'); document.querySelector('[data-type="Plates"]').click(); }
+            if(e.key === 'v') { selectCategory('type', 'Silver'); document.querySelector('[data-type="Silver"]').click(); }
+            if(e.key === 'o') { selectCategory('type', 'Other'); document.querySelector('[data-type="Other"]').click(); }
+            
+            // Disposition shortcuts
+            if(e.key === 's') { selectCategory('disposition', 'Sell'); document.querySelector('[data-disposition="Sell"]').click(); }
+            if(e.key === 'd') { selectCategory('disposition', 'Donate'); document.querySelector('[data-disposition="Donate"]').click(); }
+            if(e.key === 'g') { selectCategory('disposition', 'Gift'); document.querySelector('[data-disposition="Gift"]').click(); }
+            if(e.key === 't') { selectCategory('disposition', 'Toss'); document.querySelector('[data-disposition="Toss"]').click(); }
+            
+            // Navigation
             if(e.key === 'ArrowRight') nextItem();
             if(e.key === 'ArrowLeft') previousItem();
-            if(e.key === 'n' && document.getElementById('typefilter-no-type')) document.getElementById('typefilter-no-type').click();
+            
+            // Save
+            if(e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                saveCurrent();
+            }
+        });
+
+        // Add click handlers for category buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('#type-buttons .category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectCategory('type', this.dataset.type);
+                });
+            });
+            
+            document.querySelectorAll('#disposition-buttons .category-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    selectCategory('disposition', this.dataset.disposition);
+                });
+            });
         });
 
         function applyFiltersAndSearch() {
-            const q = (document.getElementById('review-search').value || '').toLowerCase().trim();
+            const q = (document.getElementById('categorize-search').value || '').toLowerCase().trim();
             const checkedTypes = getCheckedTypes();
-            const hasCommentsFilter = document.getElementById('has-comments-filter').checked;
-            const needsReviewFilter = document.getElementById('needs-review-filter').checked;
+            const uncategorizedFilter = document.getElementById('uncategorized-filter').checked;
+            const categorizedFilter = document.getElementById('categorized-filter').checked;
             
             filtered = items.filter(x => {
                 let passesType = true;
@@ -865,18 +809,11 @@
                     }
                 }
                 
-                let passesCommentsFilter = true;
-                if (hasCommentsFilter) {
-                    passesCommentsFilter = (x.disposition_comments && x.disposition_comments.trim()) || 
-                                          (x.review_comments && x.review_comments.trim());
-                }
-                
-                let passesReviewFilter = true;
-                if (needsReviewFilter) {
-                    const hasComments = (x.disposition_comments && x.disposition_comments.trim()) || 
-                                       (x.review_comments && x.review_comments.trim());
-                    const hasReviewCheckbox = (x.review && x.review.trim());
-                    passesReviewFilter = hasComments || hasReviewCheckbox;
+                let passesStatusFilter = true;
+                if (uncategorizedFilter && !categorizedFilter) {
+                    passesStatusFilter = !x.type || !x.type.trim() || !x.disposition || !x.disposition.trim();
+                } else if (categorizedFilter && !uncategorizedFilter) {
+                    passesStatusFilter = (x.type && x.type.trim()) && (x.disposition && x.disposition.trim());
                 }
                 
                 let passesQ = !q ||
@@ -885,7 +822,7 @@
                     (x.item_id||'').toLowerCase().includes(q) ||
                     (x.id+"").toLowerCase().includes(q);
                 
-                return passesType && passesCommentsFilter && passesReviewFilter && passesQ;
+                return passesType && passesStatusFilter && passesQ;
             });
             idx = 0;
             show(idx);
@@ -897,21 +834,22 @@
             } else {
                 countElement.textContent = `Showing ${filtered.length} of ${items.length} items`;
             }
-            
-            // Update status message
-            document.getElementById('status').textContent = filtered.length
-                ? `Showing item: ${filtered[idx]?.item_id || 'Unknown'} (${idx + 1} of ${filtered.length})`
-                : "No match found.";
         }
 
-        document.getElementById('review-search-btn').onclick = applyFiltersAndSearch;
-        document.getElementById('review-search').addEventListener('keydown', function(e) {
+        function getCheckedTypes() {
+            const checked = Array.from(document.querySelectorAll('input.type-filter[type=checkbox]:checked'));
+            const types = checked.map(cb => cb.value);
+            return types;
+        }
+
+        document.getElementById('categorize-search-btn').onclick = applyFiltersAndSearch;
+        document.getElementById('categorize-search').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') applyFiltersAndSearch();
         });
 
         // Add event listeners for status filters
-        document.getElementById('has-comments-filter').addEventListener('change', applyFiltersAndSearch);
-        document.getElementById('needs-review-filter').addEventListener('change', applyFiltersAndSearch);
+        document.getElementById('uncategorized-filter').addEventListener('change', applyFiltersAndSearch);
+        document.getElementById('categorized-filter').addEventListener('change', applyFiltersAndSearch);
 
         function renderTypeFilters() {
             typeSet = new Set();
@@ -966,4 +904,4 @@
 
     </script>
 </body>
-</html>
+</html> 
