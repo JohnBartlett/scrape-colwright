@@ -433,11 +433,29 @@
         <div class="results-section">
             <div class="results-header">
                 <div id="item-count">Loading items...</div>
+                <div id="share-controls" style="display: none;">
+                    <select id="share-user" style="margin-right: 10px; padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
+                        <option value="">Share with...</option>
+                        <option value="catharine">Catharine</option>
+                    </select>
+                    <button id="share-btn" style="
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">Share Selected</button>
+                </div>
             </div>
             <div class="table-container">
                 <table id="inventory-table">
                     <thead>
                         <tr>
+                            <th style="width: 50px;">
+                                <input type="checkbox" id="select-all" style="margin: 0;">
+                            </th>
                             <th>Item ID</th>
                             <th>Image</th>
                             <th>Description</th>
@@ -457,6 +475,23 @@
     </div>
 
     <script>
+        // Authentication check
+        function checkAuth() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            return JSON.parse(currentUser);
+        }
+
+        // Initialize auth check
+        const currentUser = checkAuth();
+        if (!currentUser) {
+            // Redirect will happen in checkAuth()
+            throw new Error('Not authenticated');
+        }
+
         let items = [];
         let typeSet = new Set();
         let filteredTypes = new Set();
@@ -550,6 +585,9 @@
                 }
                 visibleCount++;
                 tbody.innerHTML += `<tr class="data-row">
+                    <td>
+                        <input type="checkbox" data-item-id="${row.id}" style="margin: 0;">
+                    </td>
                     <td>
                         <a href="review.html?item=${encodeURIComponent(row.item_id || '')}" target="_blank" title="Review this item" class="item-id">${html(row.item_id || '')}</a>
                     </td>
@@ -652,6 +690,79 @@
             // Find button click handler
             searchButton.addEventListener('click', function() {
                 renderTable();
+            });
+
+            // Share functionality
+            const selectAllCheckbox = document.getElementById('select-all');
+            const shareControls = document.getElementById('share-controls');
+            const shareUserSelect = document.getElementById('share-user');
+            const shareBtn = document.getElementById('share-btn');
+
+            // Select all functionality
+            selectAllCheckbox.addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"][data-item-id]');
+                checkboxes.forEach(cb => cb.checked = this.checked);
+                updateShareControls();
+            });
+
+            // Share button functionality
+            shareBtn.addEventListener('click', function() {
+                const selectedUser = shareUserSelect.value;
+                if (!selectedUser) {
+                    alert('Please select a user to share with');
+                    return;
+                }
+
+                const selectedItems = Array.from(document.querySelectorAll('input[type="checkbox"][data-item-id]:checked'))
+                    .map(cb => cb.getAttribute('data-item-id'));
+
+                if (selectedItems.length === 0) {
+                    alert('Please select items to share');
+                    return;
+                }
+
+                // Add share comment to selected items
+                selectedItems.forEach(itemId => {
+                    const item = items.find(i => i.id == itemId);
+                    if (item) {
+                        const currentComments = item.comments || '';
+                        const shareComment = `\n[Shared with ${selectedUser} by ${currentUser.name} - ${new Date().toLocaleString()}]`;
+                        const updatedComments = currentComments + shareComment;
+
+                        fetch('/api/item/' + itemId, {
+                            method: "POST",
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({comments: updatedComments}),
+                        })
+                        .then(res => res.json())
+                        .then(d => {
+                            item.comments = updatedComments;
+                        });
+                    }
+                });
+
+                // Clear selections
+                selectAllCheckbox.checked = false;
+                document.querySelectorAll('input[type="checkbox"][data-item-id]').forEach(cb => cb.checked = false);
+                updateShareControls();
+
+                alert(`Shared ${selectedItems.length} items with ${selectedUser}`);
+            });
+
+            function updateShareControls() {
+                const checkedItems = document.querySelectorAll('input[type="checkbox"][data-item-id]:checked');
+                if (checkedItems.length > 0) {
+                    shareControls.style.display = 'block';
+                } else {
+                    shareControls.style.display = 'none';
+                }
+            }
+
+            // Add checkbox event listeners to update share controls
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('input[type="checkbox"][data-item-id]')) {
+                    updateShareControls();
+                }
             });
         });
 

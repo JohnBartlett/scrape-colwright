@@ -771,6 +771,137 @@
     </div>
 
     <script>
+        // Authentication check
+        function checkAuth() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            return JSON.parse(currentUser);
+        }
+
+        // Initialize auth check
+        const currentUser = checkAuth();
+        if (!currentUser) {
+            // Redirect will happen in checkAuth()
+            throw new Error('Not authenticated');
+        }
+
+        // Role-based permissions
+        const isViewer = currentUser.role === 'viewer';
+        const isAdmin = currentUser.role === 'admin';
+
+        // Disable editing for viewers
+        function setupViewerMode() {
+            if (isViewer) {
+                // Disable all input fields
+                document.querySelectorAll('input[type="text"], textarea, input[type="checkbox"]').forEach(input => {
+                    input.disabled = true;
+                });
+                
+                // Hide save button
+                const saveBtn = document.querySelector('.save-btn');
+                if (saveBtn) saveBtn.style.display = 'none';
+                
+                // Add viewer-specific buttons
+                addViewerButtons();
+            }
+        }
+
+        function addViewerButtons() {
+            const itemDisplay = document.getElementById('item-display');
+            if (!itemDisplay) return;
+            
+            // Create viewer action buttons
+            const viewerActions = document.createElement('div');
+            viewerActions.className = 'viewer-actions';
+            viewerActions.style.cssText = `
+                margin-top: 20px;
+                padding: 15px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                border: 1px solid #dee2e6;
+            `;
+            
+            viewerActions.innerHTML = `
+                <h4 style="margin-bottom: 15px; color: #495057;">Review Actions</h4>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="viewer-btn agree-btn" style="
+                        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">Agree</button>
+                    <button class="viewer-btn disagree-btn" style="
+                        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+                        color: white;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">Not Agree</button>
+                    <button class="viewer-btn discuss-btn" style="
+                        background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+                        color: #212529;
+                        border: none;
+                        padding: 10px 20px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">Discuss</button>
+                </div>
+            `;
+            
+            itemDisplay.appendChild(viewerActions);
+            
+            // Add event listeners
+            document.querySelector('.agree-btn').addEventListener('click', () => saveViewerAction('Agree'));
+            document.querySelector('.disagree-btn').addEventListener('click', () => saveViewerAction('Not Agree'));
+            document.querySelector('.discuss-btn').addEventListener('click', () => saveViewerAction('Discuss'));
+        }
+
+        function saveViewerAction(action) {
+            if (!filtered.length) return;
+            const item = filtered[idx];
+            
+            // Add viewer action to review comments
+            const currentComments = document.getElementById('review-comments').value || '';
+            const timestamp = new Date().toLocaleString();
+            const newComment = `[${currentUser.name} - ${action} - ${timestamp}]`;
+            const updatedComments = currentComments ? `${currentComments}\n${newComment}` : newComment;
+            
+            document.getElementById('review-comments').value = updatedComments;
+            
+            // Save to database
+            fetch('/api/item/' + item.id, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    review_comments: updatedComments
+                }),
+            })
+            .then(res => res.json())
+            .then(d => {
+                item.review_comments = updatedComments;
+                
+                // Show feedback
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Saved!';
+                btn.style.opacity = '0.7';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.opacity = '1';
+                }, 1500);
+            });
+        }
+
         let items = [];
         let filtered = [];
         let idx = 0;
@@ -803,6 +934,9 @@
             singleCheckboxGroup("type");
             singleCheckboxGroup("disposition");
             // Review checkboxes allow multiple selection - no singleCheckboxGroup applied
+            
+            // Setup viewer mode if needed
+            setupViewerMode();
         });
 
         function show(i) {

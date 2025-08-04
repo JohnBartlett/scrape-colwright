@@ -679,6 +679,23 @@
     </div>
 
     <script>
+        // Authentication check
+        function checkAuth() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            return JSON.parse(currentUser);
+        }
+
+        // Initialize auth check
+        const currentUser = checkAuth();
+        if (!currentUser) {
+            // Redirect will happen in checkAuth()
+            throw new Error('Not authenticated');
+        }
+
         let items = [];
         let filtered = [];
         let idx = 0;

@@ -264,7 +264,13 @@
                     <h1>Hamilton Estate Inventory System</h1>
                 </div>
                 <div class="header-system-info">
-                    <span class="version-number">v1.11.0</span>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">
+                            Welcome, <span id="user-name">User</span>
+                        </span>
+                        <button id="logout-btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Logout</button>
+                        <span class="version-number">v1.13.0</span>
+                    </div>
                 </div>
             </div>
             <div class="subtitle">Complete Inventory Management & Review System</div>
@@ -370,6 +376,32 @@
     </div>
 
     <script>
+        // Authentication check
+        function checkAuth() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return null;
+            }
+            return JSON.parse(currentUser);
+        }
+
+        // Initialize auth check
+        const currentUser = checkAuth();
+        if (!currentUser) {
+            // Redirect will happen in checkAuth()
+            throw new Error('Not authenticated');
+        }
+
+        // Display user name
+        document.getElementById('user-name').textContent = currentUser.name;
+
+        // Logout functionality
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        });
+
         // Load dashboard data
         async function loadDashboardData() {
             try {
