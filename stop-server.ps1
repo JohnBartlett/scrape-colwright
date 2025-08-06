@@ -48,6 +48,20 @@ if (-not $remainingTunnel -and -not $remainingServer) {
     }
 }
 
+# Step 3.5: Report what was actually stopped
+Write-Host "`n📋 Step 3.5: Summary of stopped processes..." -ForegroundColor Cyan
+if ($tunnelStopped) {
+    Write-Host "✅ Cloudflare tunnel was stopped" -ForegroundColor Green
+} else {
+    Write-Host "ℹ️  No Cloudflare tunnel was running" -ForegroundColor Gray
+}
+
+if ($serverStopped) {
+    Write-Host "✅ Node.js server was stopped" -ForegroundColor Green
+} else {
+    Write-Host "ℹ️  No Node.js server was running" -ForegroundColor Gray
+}
+
 # Step 4: Check if port 3000 is free
 Write-Host "`n📋 Step 4: Checking port status..." -ForegroundColor Cyan
 $portInUse = Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue
