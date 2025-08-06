@@ -403,6 +403,147 @@
             line-height: 1.6;
             text-align: center;
             border: 1px solid #dee2e6;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cheatsheet-toggle {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .cheatsheet-content {
+            transition: max-height 0.3s ease;
+            overflow: hidden;
+        }
+
+        .cheatsheet-content.collapsed {
+            max-height: 0;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Batch selection styles */
+        .batch-controls {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .batch-controls.active {
+            display: block;
+        }
+
+        .batch-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .batch-selection {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .batch-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .batch-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .batch-btn.secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        }
+
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.uncategorized {
+            background: #dc3545;
+            color: white;
+        }
+
+        .status-badge.categorized {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-badge.no-image {
+            background: #fd7e14;
+            color: white;
         }
 
         #cheatsheet strong {
@@ -534,7 +675,7 @@
                     <h1>Hamilton Estate -- Categorize Items</h1>
                 </div>
                 <div class="header-system-info">
-                                            <span class="version-number">v1.12.1</span>
+                                            <span class="version-number">v2.0.0</span>
                 </div>
             </div>
             <div class="subtitle">Quick Categorization Workflow</div>
@@ -598,6 +739,30 @@
             </div>
         </div>
 
+        <div class="batch-controls" id="batch-controls">
+            <div class="batch-header">
+                <h3>Batch Operations</h3>
+                <div class="batch-selection">
+                    <span id="batch-count">0 items selected</span>
+                    <button class="batch-btn secondary" onclick="clearBatchSelection()">Clear Selection</button>
+                </div>
+            </div>
+            <div class="category-buttons">
+                <button class="batch-btn" onclick="applyBatchType('Furniture')">Apply Type: Furniture</button>
+                <button class="batch-btn" onclick="applyBatchType('Art')">Apply Type: Art</button>
+                <button class="batch-btn" onclick="applyBatchType('Books')">Apply Type: Books</button>
+                <button class="batch-btn" onclick="applyBatchType('Plates')">Apply Type: Plates</button>
+                <button class="batch-btn" onclick="applyBatchType('Silver')">Apply Type: Silver</button>
+                <button class="batch-btn" onclick="applyBatchType('Other')">Apply Type: Other</button>
+            </div>
+            <div class="category-buttons" style="margin-top: 10px;">
+                <button class="batch-btn" onclick="applyBatchDisposition('Sell')">Apply Disposition: Sell</button>
+                <button class="batch-btn" onclick="applyBatchDisposition('Donate')">Apply Disposition: Donate</button>
+                <button class="batch-btn" onclick="applyBatchDisposition('Gift')">Apply Disposition: Gift</button>
+                <button class="batch-btn" onclick="applyBatchDisposition('Toss')">Apply Disposition: Toss</button>
+            </div>
+        </div>
+
         <div class="save-section">
             <button class="save-btn" onclick="saveCurrent()">Save & Continue</button>
         </div>
@@ -614,13 +779,16 @@
             </div>
 
             <div id="cheatsheet">
-                <strong>Keyboard Shortcuts:</strong><br>
-                <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous | 
-                <b>Types:</b> <code>f</code> Furniture, <code>a</code> Art, <code>b</code> Books, <code>p</code> Plates, <code>v</code> Silver, <code>o</code> Other<br>
-                <b>Disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss | 
-                                 <b>Person:</b> <code>c</code> Catharine, <code>a</code> Caroline, <code>j</code> John, <code>w</code> Colwright<br>
-                <b>Save:</b> <code>Enter</code> or <code>Space</code> | 
-                <b>Image:</b> Click to zoom
+                <button class="cheatsheet-toggle" onclick="toggleCheatsheet()">Toggle Help</button>
+                <div class="cheatsheet-content" id="cheatsheet-content">
+                    <strong>Keyboard Shortcuts:</strong><br>
+                    <b>Navigation:</b> <code>→</code> Next, <code>←</code> Previous | 
+                    <b>Types:</b> <code>f</code> Furniture, <code>a</code> Art, <code>b</code> Books, <code>p</code> Plates, <code>v</code> Silver, <code>o</code> Other<br>
+                    <b>Disposition:</b> <code>s</code> Sell, <code>d</code> Donate, <code>g</code> Gift, <code>t</code> Toss | 
+                                     <b>Person:</b> <code>c</code> Catharine, <code>a</code> Caroline, <code>j</code> John, <code>w</code> Colwright<br>
+                    <b>Save:</b> <code>Enter</code> or <code>Space</code> | 
+                    <b>Image:</b> Click to zoom
+                </div>
             </div>
         </div>
 
@@ -661,6 +829,9 @@
                 <table id="results-table">
                     <thead>
                         <tr>
+                            <th style="width: 50px;">
+                                <input type="checkbox" id="select-all" style="margin: 0;">
+                            </th>
                             <th>Item ID</th>
                             <th>Description</th>
                             <th>Type</th>
@@ -670,7 +841,7 @@
                     </thead>
                     <tbody id="results-body">
                         <tr>
-                            <td colspan="5" class="loading">Loading items...</td>
+                            <td colspan="6" class="loading">Loading items... <span class="loading-spinner"></span></td>
                         </tr>
                     </tbody>
                 </table>
@@ -703,6 +874,7 @@
         let currentType = '';
         let currentDisposition = '';
         let currentPerson = '';
+        let selectedItems = new Set();
 
         function toggleZoom() {
             const itemImg = document.getElementById('item-image');
@@ -931,6 +1103,9 @@
             } else {
                 countElement.textContent = `Showing ${filtered.length} of ${items.length} items`;
             }
+            
+            // Re-render the results table
+            renderResultsTable();
         }
 
         function getCheckedTypes() {
@@ -969,10 +1144,200 @@
             });
         }
 
+        // New functions for enhanced features
+        function toggleCheatsheet() {
+            const content = document.getElementById('cheatsheet-content');
+            content.classList.toggle('collapsed');
+        }
+
+        function updateBatchControls() {
+            const batchControls = document.getElementById('batch-controls');
+            const batchCount = document.getElementById('batch-count');
+            
+            if (selectedItems.size > 0) {
+                batchControls.classList.add('active');
+                batchCount.textContent = `${selectedItems.size} items selected`;
+            } else {
+                batchControls.classList.remove('active');
+                batchCount.textContent = '0 items selected';
+            }
+        }
+
+        function clearBatchSelection() {
+            selectedItems.clear();
+            document.querySelectorAll('input[type="checkbox"][data-item-id]').forEach(cb => {
+                cb.checked = false;
+            });
+            document.getElementById('select-all').checked = false;
+            updateBatchControls();
+        }
+
+        function applyBatchType(type) {
+            if (selectedItems.size === 0) return;
+            
+            const promises = Array.from(selectedItems).map(itemId => {
+                const item = items.find(i => i.id == itemId);
+                if (!item) return Promise.resolve();
+                
+                return fetch('/api/item/' + item.id, {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        type: type,
+                        disposition: item.disposition || '',
+                        person: item.person || '',
+                        comments: item.comments || '',
+                        disposition_comments: item.disposition_comments || '',
+                        review: item.review || '',
+                        review_comments: item.review_comments || ''
+                    })
+                }).then(res => res.json()).then(() => {
+                    item.type = type;
+                });
+            });
+            
+            Promise.all(promises).then(() => {
+                renderResultsTable();
+                clearBatchSelection();
+                showFeedback('Batch type applied successfully!');
+            });
+        }
+
+        function applyBatchDisposition(disposition) {
+            if (selectedItems.size === 0) return;
+            
+            const promises = Array.from(selectedItems).map(itemId => {
+                const item = items.find(i => i.id == itemId);
+                if (!item) return Promise.resolve();
+                
+                return fetch('/api/item/' + item.id, {
+                    method: "POST",
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        type: item.type || '',
+                        disposition: disposition,
+                        person: item.person || '',
+                        comments: item.comments || '',
+                        disposition_comments: item.disposition_comments || '',
+                        review: item.review || '',
+                        review_comments: item.review_comments || ''
+                    })
+                }).then(res => res.json()).then(() => {
+                    item.disposition = disposition;
+                });
+            });
+            
+            Promise.all(promises).then(() => {
+                renderResultsTable();
+                clearBatchSelection();
+                showFeedback('Batch disposition applied successfully!');
+            });
+        }
+
+        function showFeedback(message) {
+            const feedback = document.createElement('div');
+            feedback.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 600;
+            `;
+            feedback.textContent = message;
+            document.body.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 3000);
+        }
+
+        function renderResultsTable() {
+            const tbody = document.getElementById('results-body');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="no-results">No items match your filters</td></tr>';
+                return;
+            }
+            
+            const rows = filtered.map(item => {
+                const isSelected = selectedItems.has(item.id);
+                const status = getItemStatus(item);
+                const statusBadge = getStatusBadge(status);
+                
+                return `
+                    <tr>
+                        <td>
+                            <input type="checkbox" data-item-id="${item.id}" ${isSelected ? 'checked' : ''} onchange="toggleItemSelection(${item.id})">
+                        </td>
+                        <td>${item.item_id || item.id}</td>
+                        <td>
+                            <span class="item-link" onclick="goToItem(${item.id})">${item.description || 'No description'}</span>
+                        </td>
+                        <td>${item.type || '-'}</td>
+                        <td>${item.disposition || '-'}</td>
+                        <td>${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            tbody.innerHTML = rows;
+        }
+
+        function getItemStatus(item) {
+            if (!item.type || !item.disposition) return 'uncategorized';
+            if (!item.image_file && !item.image_url) return 'no-image';
+            return 'categorized';
+        }
+
+        function getStatusBadge(status) {
+            const labels = {
+                'uncategorized': 'Uncategorized',
+                'categorized': 'Categorized',
+                'no-image': 'No Image'
+            };
+            return `<span class="status-badge ${status}">${labels[status]}</span>`;
+        }
+
+        function toggleItemSelection(itemId) {
+            if (selectedItems.has(itemId)) {
+                selectedItems.delete(itemId);
+            } else {
+                selectedItems.add(itemId);
+            }
+            updateBatchControls();
+        }
+
+        function goToItem(itemId) {
+            const index = filtered.findIndex(item => item.id == itemId);
+            if (index !== -1) {
+                idx = index;
+                show(idx);
+            }
+        }
+
+        // Initialize select all functionality
+        document.getElementById('select-all').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"][data-item-id]');
+            checkboxes.forEach(cb => {
+                cb.checked = this.checked;
+                if (this.checked) {
+                    selectedItems.add(parseInt(cb.dataset.itemId));
+                } else {
+                    selectedItems.delete(parseInt(cb.dataset.itemId));
+                }
+            });
+            updateBatchControls();
+        });
+
         fetch('/api/items').then(r=>r.json()).then(data=>{
             items = data;
             filtered = items.slice();
             renderTypeFilters();
+            renderResultsTable();
             
             // Check if there's an item parameter in the URL
             const urlParams = new URLSearchParams(window.location.search);
