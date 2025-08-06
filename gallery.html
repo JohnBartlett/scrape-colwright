@@ -773,7 +773,7 @@
             </div>
         </div>
         <div class="sticky-nav-right">
-            <span class="version-badge">v2.0.4</span>
+            <span class="version-badge">v2.0.5</span>
             <button onclick="logout()" class="logout-btn">Logout</button>
         </div>
     </nav>
@@ -899,6 +899,12 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Floating Scroll Buttons -->
+    <div class="floating-scroll-buttons">
+        <button class="scroll-btn" id="scroll-to-top" title="Scroll to Top">↑</button>
+        <button class="scroll-btn" id="scroll-to-bottom" title="Scroll to Bottom">↓</button>
     </div>
 
     <script>
@@ -1482,6 +1488,38 @@
             sessionStorage.removeItem('currentUser');
             window.location.href = 'login.html';
         }
+
+        // Floating scroll buttons functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollToTopBtn = document.getElementById('scroll-to-top');
+            const scrollToBottomBtn = document.getElementById('scroll-to-bottom');
+            
+            // Show/hide scroll buttons based on scroll position
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollHeight = document.documentElement.scrollHeight;
+                const clientHeight = document.documentElement.clientHeight;
+                
+                scrollToTopBtn.disabled = scrollTop < 100;
+                scrollToBottomBtn.disabled = scrollTop + clientHeight >= scrollHeight - 100;
+            });
+            
+            // Scroll to top
+            scrollToTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+            
+            // Scroll to bottom
+            scrollToBottomBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: document.documentElement.scrollHeight,
+                    behavior: 'smooth'
+                });
+            });
+        });
 
     </script>
 </body>
