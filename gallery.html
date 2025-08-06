@@ -397,6 +397,367 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.4);
             border-radius: 12px;
         }
+
+        /* Gallery Summary Stats */
+        .gallery-summary {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Enhanced Header */
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-left, .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .pagination-controls select {
+            padding: 6px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.9rem;
+        }
+
+        /* Share Dropdown */
+        .share-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .share-dropdown-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .share-dropdown-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .dropdown-arrow {
+            font-size: 0.8rem;
+            transition: transform 0.2s ease;
+        }
+
+        .share-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .share-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: white;
+            min-width: 200px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            z-index: 1000;
+            border: 1px solid #e9ecef;
+        }
+
+        .share-dropdown.active .share-dropdown-content {
+            display: block;
+        }
+
+        .share-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .share-option:hover {
+            background: #f8f9fa;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .share-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Sortable Headers */
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+
+        .sortable:hover {
+            background: #e9ecef;
+        }
+
+        .sort-arrow {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-left: 4px;
+        }
+
+        .sortable.sorted .sort-arrow {
+            color: #667eea;
+        }
+
+        /* Pagination */
+        .pagination-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .pagination-info {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pagination-btn {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .page-numbers {
+            display: flex;
+            gap: 5px;
+        }
+
+        .page-number {
+            padding: 8px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .page-number:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+        }
+
+        .page-number.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        /* Inline Editing */
+        .editable {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .editable:hover {
+            background: #f8f9fa;
+        }
+
+        .editing {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 4px 8px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            font-size: inherit;
+            background: white;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn.edit {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .action-btn.edit:hover {
+            background: #bbdefb;
+        }
+
+        .action-btn.save {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+
+        .action-btn.save:hover {
+            background: #c8e6c9;
+        }
+
+        .action-btn.cancel {
+            background: #ffebee;
+            color: #d32f2f;
+        }
+
+        .action-btn.cancel:hover {
+            background: #ffcdd2;
+        }
+
+        /* Missing Image Badge */
+        .missing-image-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #ffebee;
+            color: #d32f2f;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .summary-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .header-left, .header-right {
+                justify-content: center;
+            }
+            
+            .pagination-footer {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
     </style>
 </head>
 <body class="with-sticky-nav">
@@ -412,7 +773,7 @@
             </div>
         </div>
         <div class="sticky-nav-right">
-            <span class="version-badge">v2.0.3</span>
+            <span class="version-badge">v2.0.4</span>
             <button onclick="logout()" class="logout-btn">Logout</button>
         </div>
     </nav>
@@ -436,23 +797,64 @@
             </div>
         </div>
 
+        <div class="gallery-summary">
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-items-count">0</div>
+                    <div class="stat-label">Total Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="missing-images-count">0</div>
+                    <div class="stat-label">Missing Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="uncategorized-count">0</div>
+                    <div class="stat-label">Uncategorized</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="with-comments-count">0</div>
+                    <div class="stat-label">With Comments</div>
+                </div>
+            </div>
+        </div>
+
         <div class="results-section">
             <div class="results-header">
-                <div id="item-count">Loading items...</div>
-                <div id="share-controls" style="display: none;">
-                    <select id="share-user" style="margin-right: 10px; padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
-                        <option value="">Share with...</option>
-                        <option value="catharine">Catharine</option>
-                    </select>
-                    <button id="share-btn" style="
-                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                        color: white;
-                        border: none;
-                        padding: 8px 16px;
-                        border-radius: 4px;
-                        cursor: pointer;
-                        font-weight: 600;
-                    ">Share Selected</button>
+                <div class="header-left">
+                    <div id="item-count">Loading items...</div>
+                    <div class="pagination-controls">
+                        <label for="items-per-page">Items per page:</label>
+                        <select id="items-per-page">
+                            <option value="25">25</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                            <option value="all">All</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div id="share-controls" style="display: none;">
+                        <div class="share-dropdown">
+                            <button class="share-dropdown-btn" onclick="toggleShareDropdown()">
+                                Share with... <span class="dropdown-arrow">▼</span>
+                            </button>
+                            <div class="share-dropdown-content" id="share-dropdown-content">
+                                <div class="share-option" onclick="shareWithUser('catharine')">
+                                    <span class="user-avatar">C</span>
+                                    <span>Catharine</span>
+                                </div>
+                                <div class="share-option" onclick="shareWithUser('caroline')">
+                                    <span class="user-avatar">C</span>
+                                    <span>Caroline</span>
+                                </div>
+                                <div class="share-option" onclick="shareWithUser('john')">
+                                    <span class="user-avatar">J</span>
+                                    <span>John</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="share-btn" class="share-btn">Share Selected</button>
+                    </div>
                 </div>
             </div>
             <div class="table-container">
@@ -462,20 +864,39 @@
                             <th style="width: 50px;">
                                 <input type="checkbox" id="select-all" style="margin: 0;">
                             </th>
-                            <th>Item ID</th>
+                            <th class="sortable" data-col="item_id" data-dir="asc">
+                                Item ID <span class="sort-arrow">↕</span>
+                            </th>
                             <th>Image</th>
-                            <th>Description</th>
-                            <th>Type</th>
-                            <th>Disposition</th>
+                            <th class="sortable" data-col="description" data-dir="asc">
+                                Description <span class="sort-arrow">↕</span>
+                            </th>
+                            <th class="sortable" data-col="type" data-dir="asc">
+                                Type <span class="sort-arrow">↕</span>
+                            </th>
+                            <th class="sortable" data-col="disposition" data-dir="asc">
+                                Disposition <span class="sort-arrow">↕</span>
+                            </th>
                             <th>Comments</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="table-body">
                         <tr>
-                            <td colspan="6" class="loading">Loading inventory items...</td>
+                            <td colspan="8" class="loading">Loading inventory items...</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+            <div class="pagination-footer">
+                <div class="pagination-info">
+                    <span id="pagination-info">Showing 0-0 of 0 items</span>
+                </div>
+                <div class="pagination-buttons">
+                    <button id="prev-page" class="pagination-btn" disabled>Previous</button>
+                    <div class="page-numbers" id="page-numbers"></div>
+                    <button id="next-page" class="pagination-btn" disabled>Next</button>
+                </div>
             </div>
         </div>
     </div>
@@ -502,6 +923,12 @@
         let typeSet = new Set();
         let filteredTypes = new Set();
         let filterNoType = false;
+        let currentPage = 1;
+        let itemsPerPage = 50;
+        let filteredItems = [];
+        let selectedItems = new Set();
+        let editingCell = null;
+        let selectedShareUser = null;
 
         function toggleZoom(imgElement) {
             imgElement.classList.toggle('zoomed');
@@ -553,6 +980,161 @@
             });
         }
 
+        function startEdit(itemId, field) {
+            if (editingCell) {
+                cancelEdit();
+            }
+
+            const cell = document.querySelector(`[data-item-id="${itemId}"][data-field="${field}"]`);
+            if (!cell) return;
+
+            const originalValue = cell.textContent.trim();
+            const item = items.find(i => i.id === itemId);
+            if (!item) return;
+
+            // Create input element
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'edit-input';
+            input.value = originalValue;
+            input.focus();
+
+            // Create action buttons
+            const saveBtn = document.createElement('button');
+            saveBtn.className = 'action-btn save';
+            saveBtn.textContent = '✓';
+            saveBtn.onclick = () => saveEdit(itemId, field, input.value);
+
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'action-btn cancel';
+            cancelBtn.textContent = '✗';
+            cancelBtn.onclick = cancelEdit;
+
+            // Replace cell content
+            cell.innerHTML = '';
+            cell.appendChild(input);
+            cell.appendChild(saveBtn);
+            cell.appendChild(cancelBtn);
+            cell.classList.add('editing');
+
+            editingCell = { cell, itemId, field, originalValue };
+
+            // Handle Enter and Escape keys
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    saveEdit(itemId, field, input.value);
+                } else if (e.key === 'Escape') {
+                    cancelEdit();
+                }
+            });
+        }
+
+        function saveEdit(itemId, field, newValue) {
+            const item = items.find(i => i.id === itemId);
+            if (!item) return;
+
+            // Update local data
+            item[field] = newValue;
+
+            // Save to database
+            fetch('/api/item/' + itemId, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ [field]: newValue }),
+            })
+            .then(res => res.json())
+            .then(d => {
+                showFeedback('Item updated successfully!');
+                editingCell = null;
+                renderTable();
+            })
+            .catch(err => {
+                showFeedback('Error updating item', 'error');
+                cancelEdit();
+            });
+        }
+
+        function cancelEdit() {
+            if (editingCell) {
+                editingCell.cell.textContent = editingCell.originalValue;
+                editingCell.cell.classList.remove('editing');
+                editingCell = null;
+            }
+        }
+
+        function showFeedback(message, type = 'success') {
+            const feedback = document.createElement('div');
+            feedback.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)' : 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 600;
+            `;
+            feedback.textContent = message;
+            document.body.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 3000);
+        }
+
+        function toggleShareDropdown() {
+            const dropdown = document.querySelector('.share-dropdown');
+            dropdown.classList.toggle('active');
+        }
+
+        function shareWithUser(user) {
+            selectedShareUser = user;
+            toggleShareDropdown();
+            
+            if (selectedItems.size === 0) {
+                alert('Please select items to share');
+                return;
+            }
+
+            // Add share comment to selected items
+            const promises = Array.from(selectedItems).map(itemId => {
+                const item = items.find(i => i.id == itemId);
+                if (item) {
+                    const currentComments = item.comments || '';
+                    const shareComment = `\n[Shared with ${user} by ${currentUser.name} - ${new Date().toLocaleString()}]`;
+                    const updatedComments = currentComments + shareComment;
+
+                    return fetch('/api/item/' + itemId, {
+                        method: "POST",
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({comments: updatedComments}),
+                    })
+                    .then(res => res.json())
+                    .then(d => {
+                        item.comments = updatedComments;
+                    });
+                }
+            });
+
+            Promise.all(promises).then(() => {
+                showFeedback(`Shared ${selectedItems.size} items with ${user}`);
+                selectedItems.clear();
+                updateShareControls();
+                renderTable();
+            });
+        }
+
+        function updateShareControls() {
+            const shareControls = document.getElementById('share-controls');
+            if (selectedItems.size > 0) {
+                shareControls.style.display = 'flex';
+            } else {
+                shareControls.style.display = 'none';
+            }
+        }
+
         function getActiveTypeFilters() {
             // If none checked, treat as "show all"
             const checked = Array.from(document.querySelectorAll('input.type-filter[type="checkbox"]:checked'));
@@ -572,60 +1154,186 @@
             const query = searchInput.value.trim().toLowerCase();
             const { checkedTypes, activeNoType, showAll } = getActiveTypeFilters();
 
-            let visibleCount = 0;
-            items.forEach(row => {
+            // Filter items
+            filteredItems = items.filter(row => {
                 // Search filter
                 if (query) {
-                    // Fuzzy match across all visible cells
                     const rowText = [
                         row.item_id, row.type, row.disposition, row.review,
                         row.description, row.client, row.comments
                     ].map(x => (x||'').toLowerCase()).join(' || ');
-                    if (!rowText.includes(query)) return;
+                    if (!rowText.includes(query)) return false;
                 }
                 // Type filter
                 if (!showAll) {
                     const typeVal = (row.type||'').trim();
                     const noType = !typeVal;
-                    if (!((checkedTypes.has(typeVal)) || (activeNoType && noType))) return;
+                    if (!((checkedTypes.has(typeVal)) || (activeNoType && noType))) return false;
                 }
-                visibleCount++;
-                tbody.innerHTML += `<tr class="data-row">
+                return true;
+            });
+
+            // Calculate pagination
+            const totalPages = itemsPerPage === 'all' ? 1 : Math.ceil(filteredItems.length / itemsPerPage);
+            const startIndex = itemsPerPage === 'all' ? 0 : (currentPage - 1) * itemsPerPage;
+            const endIndex = itemsPerPage === 'all' ? filteredItems.length : Math.min(startIndex + itemsPerPage, filteredItems.length);
+            const pageItems = filteredItems.slice(startIndex, endIndex);
+
+            // Render table rows
+            pageItems.forEach((row, index) => {
+                const actualIndex = startIndex + index;
+                const hasImage = (row.image_file && row.image_file.trim()) || (row.image_files && row.image_files.length > 0);
+                const isCategorized = (row.type && row.type.trim()) && (row.disposition && row.disposition.trim());
+                const hasComments = row.comments && row.comments.trim();
+                
+                tbody.innerHTML += `<tr class="data-row" data-item-id="${row.id}">
                     <td>
-                        <input type="checkbox" data-item-id="${row.id}" style="margin: 0;">
+                        <input type="checkbox" data-item-id="${row.id}" style="margin: 0;" ${selectedItems.has(row.id) ? 'checked' : ''}>
                     </td>
                     <td>
                         <a href="review.html?item=${encodeURIComponent(row.item_id || '')}" target="_blank" title="Review this item" class="item-id">${html(row.item_id || '')}</a>
                     </td>
-                    <td>${renderImages(row)}</td>
-                    <td class="description">${html(row.description || '')}</td>
                     <td>
-                        <span class="type-badge ${row.type ? row.type.toLowerCase().replace(/\s+/g, '-') : 'type-other'}">${html(row.type || '')}</span>
+                        ${hasImage ? renderImages(row) : '<span class="missing-image-badge">No Image</span>'}
+                    </td>
+                    <td class="description editable" data-field="description" data-item-id="${row.id}">${html(row.description || '')}</td>
+                    <td>
+                        <span class="type-badge ${row.type ? row.type.toLowerCase().replace(/\s+/g, '-') : 'type-other'} editable" data-field="type" data-item-id="${row.id}">${html(row.type || '')}</span>
                     </td>
                     <td>
-                        <span class="disposition-badge ${row.disposition ? row.disposition.toLowerCase().replace(/\s+/g, '-') : 'disposition-other'}">${html(row.disposition || '')}</span>
+                        <span class="disposition-badge ${row.disposition ? row.disposition.toLowerCase().replace(/\s+/g, '-') : 'disposition-other'} editable" data-field="disposition" data-item-id="${row.id}">${html(row.disposition || '')}</span>
                     </td>
-                    <td>${html(row.comments || '')}</td>
+                    <td class="editable" data-field="comments" data-item-id="${row.id}">${html(row.comments || '')}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn edit" onclick="startEdit(${row.id}, 'description')" title="Edit Description">D</button>
+                            <button class="action-btn edit" onclick="startEdit(${row.id}, 'type')" title="Edit Type">T</button>
+                            <button class="action-btn edit" onclick="startEdit(${row.id}, 'disposition')" title="Edit Disposition">D</button>
+                            <button class="action-btn edit" onclick="startEdit(${row.id}, 'comments')" title="Edit Comments">C</button>
+                        </div>
+                    </td>
                 </tr>`;
             });
 
             // Update item count display
             const countElement = document.getElementById('item-count');
-            if (visibleCount === items.length) {
+            if (filteredItems.length === items.length) {
                 countElement.textContent = `Showing all ${items.length} items`;
             } else {
-                countElement.textContent = `Showing ${visibleCount} of ${items.length} items`;
+                countElement.textContent = `Showing ${filteredItems.length} of ${items.length} items`;
             }
 
-            // Attach sort events after every render
-            document.querySelectorAll('.sort-arrow').forEach(el => {
-                el.onclick = function() {
-                    document.querySelectorAll('.sort-arrow').forEach(e => e.classList.remove('sorted'));
-                    this.classList.add('sorted');
+            // Update pagination
+            updatePagination(totalPages, startIndex, endIndex);
+            updateSummaryStats();
+
+            // Attach event listeners
+            attachTableEventListeners();
+        }
+
+        function updatePagination(totalPages, startIndex, endIndex) {
+            const paginationInfo = document.getElementById('pagination-info');
+            const pageNumbers = document.getElementById('page-numbers');
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+
+            if (itemsPerPage === 'all') {
+                paginationInfo.textContent = `Showing all ${filteredItems.length} items`;
+                pageNumbers.innerHTML = '';
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                return;
+            }
+
+            paginationInfo.textContent = `Showing ${startIndex + 1}-${endIndex} of ${filteredItems.length} items`;
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+
+            // Generate page numbers
+            pageNumbers.innerHTML = '';
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `page-number ${i === currentPage ? 'active' : ''}`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => goToPage(i);
+                pageNumbers.appendChild(pageBtn);
+            }
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            renderTable();
+        }
+
+        function updateSummaryStats() {
+            const totalItems = items.length;
+            const missingImages = items.filter(item => 
+                !(item.image_file && item.image_file.trim()) && 
+                !(item.image_files && item.image_files.length > 0)
+            ).length;
+            const uncategorized = items.filter(item => 
+                !(item.type && item.type.trim()) || !(item.disposition && item.disposition.trim())
+            ).length;
+            const withComments = items.filter(item => 
+                item.comments && item.comments.trim()
+            ).length;
+
+            document.getElementById('total-items-count').textContent = totalItems;
+            document.getElementById('missing-images-count').textContent = missingImages;
+            document.getElementById('uncategorized-count').textContent = uncategorized;
+            document.getElementById('with-comments-count').textContent = withComments;
+        }
+
+        function attachTableEventListeners() {
+            // Checkbox event listeners
+            document.querySelectorAll('input[type="checkbox"][data-item-id]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const itemId = parseInt(this.getAttribute('data-item-id'));
+                    if (this.checked) {
+                        selectedItems.add(itemId);
+                    } else {
+                        selectedItems.delete(itemId);
+                    }
+                    updateShareControls();
+                });
+            });
+
+            // Editable cell event listeners
+            document.querySelectorAll('.editable').forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const itemId = parseInt(this.getAttribute('data-item-id'));
+                    const field = this.getAttribute('data-field');
+                    startEdit(itemId, field);
+                });
+            });
+
+            // Sortable header event listeners
+            document.querySelectorAll('.sortable').forEach(header => {
+                header.addEventListener('click', function() {
                     const col = this.getAttribute('data-col');
-                    const dir = this.getAttribute('data-dir');
-                    sortTableBy(col, dir);
-                };
+                    const currentDir = this.getAttribute('data-dir');
+                    const newDir = currentDir === 'asc' ? 'desc' : 'asc';
+                    
+                    // Update all headers
+                    document.querySelectorAll('.sortable').forEach(h => {
+                        h.setAttribute('data-dir', 'asc');
+                        h.classList.remove('sorted');
+                    });
+                    
+                    this.setAttribute('data-dir', newDir);
+                    this.classList.add('sorted');
+                    
+                    sortTableBy(col, newDir);
+                });
             });
         }
 
@@ -682,6 +1390,7 @@
             const searchButton = document.getElementById('item-search-btn');
             
             function handleSearchInput() {
+                currentPage = 1; // Reset to first page when filtering
                 renderTable();
             }
             
@@ -698,76 +1407,72 @@
                 renderTable();
             });
 
-            // Share functionality
-            const selectAllCheckbox = document.getElementById('select-all');
-            const shareControls = document.getElementById('share-controls');
-            const shareUserSelect = document.getElementById('share-user');
-            const shareBtn = document.getElementById('share-btn');
+            // Pagination controls
+            const itemsPerPageSelect = document.getElementById('items-per-page');
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+
+            itemsPerPageSelect.addEventListener('change', function() {
+                itemsPerPage = this.value === 'all' ? 'all' : parseInt(this.value);
+                currentPage = 1;
+                renderTable();
+            });
+
+            prevPageBtn.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            });
+
+            nextPageBtn.addEventListener('click', function() {
+                const totalPages = itemsPerPage === 'all' ? 1 : Math.ceil(filteredItems.length / itemsPerPage);
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            });
 
             // Select all functionality
+            const selectAllCheckbox = document.getElementById('select-all');
             selectAllCheckbox.addEventListener('change', function() {
                 const checkboxes = document.querySelectorAll('input[type="checkbox"][data-item-id]');
-                checkboxes.forEach(cb => cb.checked = this.checked);
+                const isChecked = this.checked;
+                
+                checkboxes.forEach(cb => {
+                    cb.checked = isChecked;
+                    const itemId = parseInt(cb.getAttribute('data-item-id'));
+                    if (isChecked) {
+                        selectedItems.add(itemId);
+                    } else {
+                        selectedItems.delete(itemId);
+                    }
+                });
+                
                 updateShareControls();
             });
 
             // Share button functionality
+            const shareBtn = document.getElementById('share-btn');
             shareBtn.addEventListener('click', function() {
-                const selectedUser = shareUserSelect.value;
-                if (!selectedUser) {
+                if (selectedItems.size === 0) {
+                    alert('Please select items to share');
+                    return;
+                }
+                
+                if (!selectedShareUser) {
                     alert('Please select a user to share with');
                     return;
                 }
 
-                const selectedItems = Array.from(document.querySelectorAll('input[type="checkbox"][data-item-id]:checked'))
-                    .map(cb => cb.getAttribute('data-item-id'));
-
-                if (selectedItems.length === 0) {
-                    alert('Please select items to share');
-                    return;
-                }
-
-                // Add share comment to selected items
-                selectedItems.forEach(itemId => {
-                    const item = items.find(i => i.id == itemId);
-                    if (item) {
-                        const currentComments = item.comments || '';
-                        const shareComment = `\n[Shared with ${selectedUser} by ${currentUser.name} - ${new Date().toLocaleString()}]`;
-                        const updatedComments = currentComments + shareComment;
-
-                        fetch('/api/item/' + itemId, {
-                            method: "POST",
-                            headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({comments: updatedComments}),
-                        })
-                        .then(res => res.json())
-                        .then(d => {
-                            item.comments = updatedComments;
-                        });
-                    }
-                });
-
-                // Clear selections
-                selectAllCheckbox.checked = false;
-                document.querySelectorAll('input[type="checkbox"][data-item-id]').forEach(cb => cb.checked = false);
-                updateShareControls();
-
-                alert(`Shared ${selectedItems.length} items with ${selectedUser}`);
+                shareWithUser(selectedShareUser);
             });
 
-            function updateShareControls() {
-                const checkedItems = document.querySelectorAll('input[type="checkbox"][data-item-id]:checked');
-                if (checkedItems.length > 0) {
-                    shareControls.style.display = 'block';
-                } else {
-                    shareControls.style.display = 'none';
-                }
-            }
-
-            // Add checkbox event listeners to update share controls
-            document.addEventListener('change', function(e) {
-                if (e.target.matches('input[type="checkbox"][data-item-id]')) {
-                    updateShareControls();
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                const dropdown = document.querySelector('.share-dropdown');
+                if (!dropdown.contains(e.target)) {
+                    dropdown.classList.remove('active');
                 }
             });
         });
