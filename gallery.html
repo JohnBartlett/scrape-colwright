@@ -473,6 +473,86 @@
             font-size: 0.9rem;
         }
 
+        /* Batch Controls */
+        .batch-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .batch-dropdown-btn {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .batch-dropdown-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .batch-dropdown-content {
+            display: none;
+            position: absolute;
+            background: white;
+            min-width: 150px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            z-index: 1000;
+            top: 100%;
+            left: 0;
+            margin-top: 5px;
+        }
+
+        .batch-dropdown.active .batch-dropdown-content {
+            display: block;
+        }
+
+        .batch-option {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f3f4;
+            transition: background 0.2s ease;
+        }
+
+        .batch-option:last-child {
+            border-bottom: none;
+        }
+
+        .batch-option:hover {
+            background: #f8f9fa;
+        }
+
+        .batch-btn {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .batch-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .batch-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         /* Share Dropdown */
         .share-dropdown {
             position: relative;
@@ -774,7 +854,7 @@
             </div>
         </div>
         <div class="sticky-nav-right">
-                                    <span class="version-badge">v2.1.0</span>
+                                    <span class="version-badge">v2.2.0</span>
             <button onclick="logout()" class="logout-btn">Logout</button>
         </div>
     </nav>
@@ -839,6 +919,22 @@
                     </div>
                 </div>
                 <div class="header-right">
+                    <div id="batch-controls" style="display: none;">
+                        <div class="batch-dropdown">
+                            <button class="batch-dropdown-btn" onclick="toggleBatchDropdown()">
+                                Set Type for Selected... <span class="dropdown-arrow">▼</span>
+                            </button>
+                            <div class="batch-dropdown-content" id="batch-dropdown-content">
+                                <div class="batch-option" onclick="setBatchType('Art')">Art</div>
+                                <div class="batch-option" onclick="setBatchType('Furniture')">Furniture</div>
+                                <div class="batch-option" onclick="setBatchType('Silver')">Silver</div>
+                                <div class="batch-option" onclick="setBatchType('Plates')">Plates</div>
+                                <div class="batch-option" onclick="setBatchType('Other')">Other</div>
+                                <div class="batch-option" onclick="setBatchType('')">No Type</div>
+                            </div>
+                        </div>
+                        <button id="batch-btn" class="batch-btn">Apply to Selected</button>
+                    </div>
                     <div id="share-controls" style="display: none;">
                         <div class="share-dropdown">
                             <button class="share-dropdown-btn" onclick="toggleShareDropdown()">
@@ -1561,6 +1657,7 @@
                         selectedItems.delete(itemId);
                     }
                     updateShareControls();
+                    updateBatchControls();
                 });
             });
 
@@ -1710,6 +1807,13 @@
                 });
                 
                 updateShareControls();
+                updateBatchControls();
+            });
+
+            // Batch button functionality
+            const batchBtn = document.getElementById('batch-btn');
+            batchBtn.addEventListener('click', function() {
+                applyBatchType();
             });
 
             // Share button functionality
@@ -1728,11 +1832,18 @@
                 shareWithUser(selectedShareUser);
             });
 
-            // Close dropdown when clicking outside
+            // Close dropdowns when clicking outside
             document.addEventListener('click', function(e) {
-                const dropdown = document.querySelector('.share-dropdown');
-                if (!dropdown.contains(e.target)) {
-                    dropdown.classList.remove('active');
+                const shareDropdown = document.querySelector('.share-dropdown');
+                const batchDropdown = document.querySelector('.batch-dropdown');
+                
+                if (shareDropdown && !shareDropdown.contains(e.target)) {
+                    shareDropdown.classList.remove('active');
+                }
+                
+                if (batchDropdown && !batchDropdown.contains(e.target)) {
+                    batchDropdown.classList.remove('active');
+                    batchDropdownActive = false;
                 }
             });
         });
@@ -1741,6 +1852,112 @@
         function logout() {
             sessionStorage.removeItem('currentUser');
             window.location.href = 'login.html';
+        }
+
+        // Batch categorization functionality
+        let selectedBatchType = '';
+        let batchDropdownActive = false;
+
+        function toggleBatchDropdown() {
+            const dropdown = document.querySelector('.batch-dropdown');
+            batchDropdownActive = !batchDropdownActive;
+            
+            if (batchDropdownActive) {
+                dropdown.classList.add('active');
+            } else {
+                dropdown.classList.remove('active');
+            }
+        }
+
+        function setBatchType(type) {
+            selectedBatchType = type;
+            const dropdown = document.querySelector('.batch-dropdown');
+            const btn = dropdown.querySelector('.batch-dropdown-btn');
+            
+            if (type === '') {
+                btn.textContent = 'Set Type for Selected... ▼';
+            } else {
+                btn.textContent = `Set Type: ${type} ▼`;
+            }
+            
+            dropdown.classList.remove('active');
+            batchDropdownActive = false;
+        }
+
+        function applyBatchType() {
+            if (selectedItems.size === 0) {
+                showFeedback('Please select items to categorize', 'error');
+                return;
+            }
+            
+            if (selectedBatchType === '') {
+                showFeedback('Please select a type to apply', 'error');
+                return;
+            }
+
+            const confirmMessage = `Are you sure you want to set the type to "${selectedBatchType}" for ${selectedItems.size} selected items?`;
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            // Show loading state
+            const batchBtn = document.getElementById('batch-btn');
+            const originalText = batchBtn.textContent;
+            batchBtn.textContent = 'Applying...';
+            batchBtn.disabled = true;
+
+            // Process each selected item
+            const promises = Array.from(selectedItems).map(itemId => {
+                return fetch(`/api/item/${itemId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: selectedBatchType
+                    })
+                }).then(response => response.json());
+            });
+
+            Promise.all(promises)
+                .then(results => {
+                    const successCount = results.filter(r => r.ok).length;
+                    const errorCount = results.length - successCount;
+                    
+                    if (errorCount > 0) {
+                        showFeedback(`Applied to ${successCount} items. ${errorCount} items failed.`, 'warning');
+                    } else {
+                        showFeedback(`Successfully categorized ${successCount} items as "${selectedBatchType}"`, 'success');
+                    }
+                    
+                    // Clear selection and refresh
+                    selectedItems.clear();
+                    document.getElementById('select-all').checked = false;
+                    selectedBatchType = '';
+                    document.querySelector('.batch-dropdown-btn').textContent = 'Set Type for Selected... ▼';
+                    updateBatchControls();
+                    fetchAndRenderItems();
+                })
+                .catch(error => {
+                    console.error('Batch categorization error:', error);
+                    showFeedback('Error applying batch categorization', 'error');
+                })
+                .finally(() => {
+                    batchBtn.textContent = originalText;
+                    batchBtn.disabled = false;
+                });
+        }
+
+        function updateBatchControls() {
+            const batchControls = document.getElementById('batch-controls');
+            const batchBtn = document.getElementById('batch-btn');
+            
+            if (selectedItems.size > 0) {
+                batchControls.style.display = 'block';
+                batchBtn.disabled = selectedBatchType === '';
+            } else {
+                batchControls.style.display = 'none';
+            }
         }
 
         // Floating scroll buttons functionality
