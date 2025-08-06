@@ -1,0 +1,335 @@
+/* ===== ROLE-BASED STYLES ===== */
+
+/* Permission Notice */
+.permission-notice {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.permission-notice.viewer {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+}
+
+.permission-notice.buyer {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.permission-notice.appraiser {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+.permission-notice.admin {
+    background: linear-gradient(135deg, #1f2937 0%, #374151 100%);
+}
+
+/* Interest Button */
+.interest-btn {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.interest-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+.interest-btn.interested {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+.interest-btn.interested:hover {
+    box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.interest-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Interest Badge */
+.interest-badge {
+    background: #10b981;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.interest-badge.count {
+    background: #dc2626;
+}
+
+/* Appraisal Section */
+.appraisal-section {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 12px 0;
+}
+
+.appraisal-section h4 {
+    color: #92400e;
+    margin-bottom: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.appraisal-value {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.appraisal-value input {
+    width: 120px;
+    padding: 8px 12px;
+    border: 2px solid #f59e0b;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #92400e;
+}
+
+.appraisal-value input:focus {
+    outline: none;
+    border-color: #d97706;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+.appraisal-notes {
+    width: 100%;
+    padding: 8px 12px;
+    border: 2px solid #f59e0b;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #92400e;
+    resize: vertical;
+    min-height: 60px;
+}
+
+.appraisal-notes:focus {
+    outline: none;
+    border-color: #d97706;
+    box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+/* Appraisal Badge */
+.appraisal-badge {
+    background: #f59e0b;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.appraisal-badge.value {
+    background: #dc2626;
+}
+
+/* Role-based Field Visibility */
+.field-hidden {
+    display: none !important;
+}
+
+.field-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+/* Interest Note Modal */
+.interest-note-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.interest-note-content {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.interest-note-content h3 {
+    margin-bottom: 16px;
+    color: #333;
+}
+
+.interest-note-content textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 16px;
+}
+
+.interest-note-content textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.interest-note-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.interest-note-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.interest-note-btn.cancel {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.interest-note-btn.cancel:hover {
+    background: #d1d5db;
+}
+
+.interest-note-btn.save {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+}
+
+.interest-note-btn.save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+}
+
+/* Interested Parties List */
+.interested-parties {
+    background: #f0f9ff;
+    border: 1px solid #0ea5e9;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 8px 0;
+}
+
+.interested-parties h5 {
+    color: #0c4a6e;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.interested-party {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid #e0f2fe;
+}
+
+.interested-party:last-child {
+    border-bottom: none;
+}
+
+.interested-party-name {
+    font-weight: 600;
+    color: #0c4a6e;
+}
+
+.interested-party-note {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.interested-party-time {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+
+/* Role-specific Action Buttons */
+.role-action-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+    margin: 2px;
+}
+
+.role-action-btn.buyer {
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: white;
+}
+
+.role-action-btn.appraiser {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: white;
+}
+
+.role-action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .appraisal-value {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .appraisal-value input {
+        width: 100%;
+    }
+    
+    .interest-note-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .interested-party {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+} 

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hamilton Estate -- WPB Content</title>
     <link rel="stylesheet" href="universal-styles.css">
+    <link rel="stylesheet" href="role-styles.css">
     <style>
         * {
             margin: 0;
@@ -773,12 +774,17 @@
             </div>
         </div>
         <div class="sticky-nav-right">
-            <span class="version-badge">v2.0.5</span>
+                                    <span class="version-badge">v2.1.0</span>
             <button onclick="logout()" class="logout-btn">Logout</button>
         </div>
     </nav>
 
     <div class="container">
+        <!-- Permission Notice -->
+        <div id="permission-notice" class="permission-notice" style="display: none;">
+            <span id="permission-text">Loading permissions...</span>
+        </div>
+        
         <div class="dashboard-header">
             <h1>Hamilton Estate -- Gallery View</h1>
             <div class="subtitle">Browse All Inventory Items</div>
@@ -901,6 +907,18 @@
         </div>
     </div>
 
+    <!-- Interest Note Modal -->
+    <div id="interest-note-modal" class="interest-note-modal">
+        <div class="interest-note-content">
+            <h3>Add Interest Note</h3>
+            <textarea id="interest-note-text" placeholder="Optional: Add a note about your interest in this item..."></textarea>
+            <div class="interest-note-buttons">
+                <button class="interest-note-btn cancel" onclick="closeInterestNoteModal()">Cancel</button>
+                <button class="interest-note-btn save" onclick="saveInterestNote()">Save Interest</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating Scroll Buttons -->
     <div class="floating-scroll-buttons">
         <button class="scroll-btn" id="scroll-to-top" title="Scroll to Top">↑</button>
@@ -923,6 +941,166 @@
         if (!currentUser) {
             // Redirect will happen in checkAuth()
             throw new Error('Not authenticated');
+        }
+
+        // Role-based functionality
+        let currentItemForInterest = null;
+        let currentInterestNote = '';
+
+        // Setup role-based UI
+        function setupRoleBasedUI() {
+            const permissionNotice = document.getElementById('permission-notice');
+            const permissionText = document.getElementById('permission-text');
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            
+            if (!currentUser) return;
+            
+            let permissionMessage = '';
+            let roleClass = '';
+            
+            switch (currentUser.role) {
+                case 'admin':
+                    permissionMessage = `Admin Access - Full privileges for editing, categorization, and management`;
+                    roleClass = 'admin';
+                    break;
+                case 'viewer':
+                    permissionMessage = `Viewer Access - Read-only access to shared items`;
+                    roleClass = 'viewer';
+                    break;
+                case 'buyer':
+                    permissionMessage = `Buyer Access - Can view items and mark interest in purchases`;
+                    roleClass = 'buyer';
+                    break;
+                case 'appraiser':
+                    permissionMessage = `Appraiser Access - Can view items and provide value estimates`;
+                    roleClass = 'appraiser';
+                    break;
+                default:
+                    permissionMessage = `Unknown role: ${currentUser.role}`;
+                    roleClass = 'viewer';
+            }
+            
+            permissionText.textContent = permissionMessage;
+            permissionNotice.className = `permission-notice ${roleClass}`;
+            permissionNotice.style.display = 'block';
+            
+            // Hide admin-only features for non-admin users
+            if (currentUser.role !== 'admin') {
+                const shareControls = document.getElementById('share-controls');
+                if (shareControls) {
+                    shareControls.style.display = 'none';
+                }
+            }
+        }
+
+        // Interest functionality
+        function markInterest(itemId, interested) {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser || currentUser.role !== 'buyer') return;
+            
+            const note = interested ? currentInterestNote : '';
+            
+            fetch(`/api/item/${itemId}/interest`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: currentUser.username,
+                    interested: interested,
+                    note: note
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    // Update the button state
+                    const btn = document.querySelector(`[data-interest-btn="${itemId}"]`);
+                    if (btn) {
+                        btn.classList.toggle('interested', interested);
+                        btn.textContent = interested ? 'Interested!' : 'I\'m Interested!';
+                    }
+                    closeInterestNoteModal();
+                    loadItems(); // Refresh the data
+                }
+            })
+            .catch(error => console.error('Error marking interest:', error));
+        }
+
+        function showInterestNoteModal(itemId) {
+            currentItemForInterest = itemId;
+            currentInterestNote = '';
+            document.getElementById('interest-note-text').value = '';
+            document.getElementById('interest-note-modal').style.display = 'flex';
+        }
+
+        function closeInterestNoteModal() {
+            document.getElementById('interest-note-modal').style.display = 'none';
+            currentItemForInterest = null;
+            currentInterestNote = '';
+        }
+
+        function saveInterestNote() {
+            currentInterestNote = document.getElementById('interest-note-text').value;
+            if (currentItemForInterest) {
+                markInterest(currentItemForInterest, true);
+            }
+        }
+
+        // Appraisal functionality
+        function saveAppraisal(itemId) {
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            if (!currentUser || currentUser.role !== 'appraiser') return;
+            
+            const valueInput = document.querySelector(`[data-appraisal-value="${itemId}"]`);
+            const notesInput = document.querySelector(`[data-appraisal-notes="${itemId}"]`);
+            
+            if (!valueInput || !notesInput) return;
+            
+            const value = parseFloat(valueInput.value) || null;
+            const notes = notesInput.value.trim();
+            
+            fetch(`/api/item/${itemId}/appraisal`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: currentUser.username,
+                    value: value,
+                    notes: notes
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    showFeedback('Appraisal saved successfully!', 'success');
+                    loadItems(); // Refresh the data
+                }
+            })
+            .catch(error => {
+                console.error('Error saving appraisal:', error);
+                showFeedback('Error saving appraisal', 'error');
+            });
+        }
+
+        function showFeedback(message, type = 'info') {
+            // Create a temporary feedback element
+            const feedback = document.createElement('div');
+            feedback.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 1001;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            `;
+            feedback.textContent = message;
+            document.body.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.remove();
+            }, 3000);
         }
 
         let items = [];
@@ -1192,6 +1370,76 @@
                 const isCategorized = (row.type && row.type.trim()) && (row.disposition && row.disposition.trim());
                 const hasComments = row.comments && row.comments.trim();
                 
+                // Parse interested parties
+                let interestedParties = [];
+                if (row.interested_parties) {
+                    try {
+                        interestedParties = JSON.parse(row.interested_parties);
+                    } catch (e) {
+                        interestedParties = [];
+                    }
+                }
+                
+                // Check if current user is interested
+                const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+                const isInterested = currentUser && interestedParties.some(p => p.username === currentUser.username);
+                
+                // Role-based action buttons
+                let roleActions = '';
+                if (currentUser && currentUser.role === 'buyer') {
+                    roleActions = `
+                        <button class="interest-btn ${isInterested ? 'interested' : ''}" 
+                                data-interest-btn="${row.id}" 
+                                onclick="${isInterested ? 'markInterest(' + row.id + ', false)' : 'showInterestNoteModal(' + row.id + ')'}"
+                                title="${isInterested ? 'Remove interest' : 'Mark as interested'}">
+                            ${isInterested ? 'Interested!' : 'I\'m Interested!'}
+                        </button>
+                    `;
+                } else if (currentUser && currentUser.role === 'appraiser') {
+                    roleActions = `
+                        <div class="appraisal-section">
+                            <h4>Appraisal</h4>
+                            <div class="appraisal-value">
+                                <label>Value: $</label>
+                                <input type="number" data-appraisal-value="${row.id}" value="${row.appraisal_value || ''}" placeholder="0.00" step="0.01" min="0">
+                            </div>
+                            <textarea class="appraisal-notes" data-appraisal-notes="${row.id}" placeholder="Appraiser's notes...">${row.appraiser_notes || ''}</textarea>
+                            <button class="role-action-btn appraiser" onclick="saveAppraisal(${row.id})">Save Appraisal</button>
+                        </div>
+                    `;
+                }
+                
+                // Show interested parties for admins
+                let interestedPartiesHtml = '';
+                if (currentUser && currentUser.role === 'admin' && interestedParties.length > 0) {
+                    interestedPartiesHtml = `
+                        <div class="interested-parties">
+                            <h5>Interested Parties (${interestedParties.length})</h5>
+                            ${interestedParties.map(party => `
+                                <div class="interested-party">
+                                    <div>
+                                        <span class="interested-party-name">${party.username}</span>
+                                        ${party.note ? `<span class="interested-party-note"> - ${party.note}</span>` : ''}
+                                    </div>
+                                    <span class="interested-party-time">${new Date(party.timestamp).toLocaleDateString()}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+                
+                // Show appraisal info for admins
+                let appraisalInfoHtml = '';
+                if (currentUser && currentUser.role === 'admin' && (row.appraisal_value || row.appraiser_notes)) {
+                    appraisalInfoHtml = `
+                        <div class="appraisal-section">
+                            <h4>Appraisal by ${row.appraiser_user || 'Unknown'}</h4>
+                            ${row.appraisal_value ? `<div>Value: $${row.appraisal_value}</div>` : ''}
+                            ${row.appraiser_notes ? `<div>Notes: ${row.appraiser_notes}</div>` : ''}
+                        </div>
+                    `;
+                }
+                
                 tbody.innerHTML += `<tr class="data-row" data-item-id="${row.id}">
                     <td>
                         <input type="checkbox" data-item-id="${row.id}" style="margin: 0;" ${selectedItems.has(row.id) ? 'checked' : ''}>
@@ -1217,6 +1465,9 @@
                             <button class="action-btn edit" onclick="startEdit(${row.id}, 'disposition')" title="Edit Disposition">D</button>
                             <button class="action-btn edit" onclick="startEdit(${row.id}, 'comments')" title="Edit Comments">C</button>
                         </div>
+                        ${roleActions}
+                        ${interestedPartiesHtml}
+                        ${appraisalInfoHtml}
                     </td>
                 </tr>`;
             });
@@ -1379,6 +1630,9 @@
 
         // On page load:
         document.addEventListener('DOMContentLoaded', () => {
+            // Setup role-based UI
+            setupRoleBasedUI();
+            
             fetch('/api/items').then(r=>r.json()).then(data=>{
                 items = data;
                 // Compute set of unique types

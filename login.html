@@ -170,9 +170,9 @@
         </form>
 
         <div class="version-info">
-            <div>Version v1.13.0</div>
+            <div>Version v2.1.0</div>
             <div style="margin-top: 5px; font-size: 0.8rem;">
-                Available users: John, Caroline, Catharine
+                Available users: John, Caroline (Admin), Catharine (Viewer), Buyer1/2 (Buyer), Appraiser1/2 (Appraiser)
             </div>
         </div>
     </div>
@@ -200,7 +200,11 @@
                 const validUsers = {
                     'john': { password: '2Dream1420!', role: 'admin', name: 'John' },
                     'caroline': { password: '2Dream1420!', role: 'admin', name: 'Caroline' },
-                    'catharine': { password: 'cch1500', role: 'viewer', name: 'Catharine' }
+                    'catharine': { password: 'cch1500', role: 'viewer', name: 'Catharine' },
+                    'buyer1': { password: 'buyer123', role: 'buyer', name: 'Buyer One' },
+                    'buyer2': { password: 'buyer456', role: 'buyer', name: 'Buyer Two' },
+                    'appraiser1': { password: 'appraise123', role: 'appraiser', name: 'Appraiser One' },
+                    'appraiser2': { password: 'appraise456', role: 'appraiser', name: 'Appraiser Two' }
                 };
                 
                 const userKey = username.toLowerCase();

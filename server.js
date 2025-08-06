@@ -15,6 +15,14 @@ const PORT = process.env.PORT || 3000;
 // Change '127.0.0.1' to '0.0.0.0' if you need remote network access
 const HOST = process.env.HOST || '127.0.0.1';
 
+// Initialize database with new fields for role-based features
+db.exec(`
+  ALTER TABLE items ADD COLUMN interested_parties TEXT DEFAULT '[]';
+  ALTER TABLE items ADD COLUMN appraisal_value REAL DEFAULT NULL;
+  ALTER TABLE items ADD COLUMN appraiser_notes TEXT DEFAULT '';
+  ALTER TABLE items ADD COLUMN appraiser_user TEXT DEFAULT '';
+`).run();
+
 // Serve static files like index.html/review.html/images
 app.use(express.static(__dirname));
 app.use(bodyParser.json());
@@ -33,6 +41,73 @@ app.post("/api/item/:id", (req, res) => {
     "UPDATE items SET comments = ?, type = ?, disposition = ?, person = ?, disposition_comments = ?, review = ?, review_comments = ? WHERE id = ?"
   ).run(comments || "", type || "", disposition || "", person || "", disposition_comments || "", review || "", review_comments || "", id);
   res.json({ ok: true });
+});
+
+// API: mark item as interested (for buyers)
+app.post("/api/item/:id/interest", (req, res) => {
+  const { id } = req.params;
+  const { username, interested, note } = req.body;
+  
+  try {
+    const item = db.prepare("SELECT interested_parties FROM items WHERE id = ?").get(id);
+    let interestedParties = [];
+    
+    if (item && item.interested_parties) {
+      try {
+        interestedParties = JSON.parse(item.interested_parties);
+      } catch (e) {
+        interestedParties = [];
+      }
+    }
+    
+    if (interested) {
+      // Add or update interest
+      const existingIndex = interestedParties.findIndex(p => p.username === username);
+      if (existingIndex >= 0) {
+        interestedParties[existingIndex] = { username, note: note || '', timestamp: new Date().toISOString() };
+      } else {
+        interestedParties.push({ username, note: note || '', timestamp: new Date().toISOString() });
+      }
+    } else {
+      // Remove interest
+      interestedParties = interestedParties.filter(p => p.username !== username);
+    }
+    
+    db.prepare("UPDATE items SET interested_parties = ? WHERE id = ?").run(JSON.stringify(interestedParties), id);
+    res.json({ ok: true, interestedParties });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: set appraisal value and notes (for appraisers)
+app.post("/api/item/:id/appraisal", (req, res) => {
+  const { id } = req.params;
+  const { username, value, notes } = req.body;
+  
+  try {
+    db.prepare("UPDATE items SET appraisal_value = ?, appraiser_notes = ?, appraiser_user = ? WHERE id = ?").run(
+      value || null, 
+      notes || '', 
+      username || '', 
+      id
+    );
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API: get items by interested party
+app.get("/api/items/interested/:username", (req, res) => {
+  const { username } = req.params;
+  
+  try {
+    const rows = db.prepare("SELECT * FROM items WHERE interested_parties LIKE ? ORDER BY item_id ASC").all(`%${username}%`);
+    res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 app.listen(PORT, HOST, () => {
