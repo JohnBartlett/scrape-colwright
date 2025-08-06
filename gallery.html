@@ -1936,7 +1936,7 @@
                     selectedBatchType = '';
                     document.querySelector('.batch-dropdown-btn').textContent = 'Set Type for Selected... ▼';
                     updateBatchControls();
-                    fetchAndRenderItems();
+                    renderTable();
                 })
                 .catch(error => {
                     console.error('Batch categorization error:', error);
