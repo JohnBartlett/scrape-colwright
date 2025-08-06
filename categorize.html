@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hamilton Estate -- Categorize Items</title>
+    <link rel="stylesheet" href="universal-styles.css">
     <style>
         * {
             margin: 0;
@@ -667,24 +668,29 @@
         }
     </style>
 </head>
-<body>
+<body class="with-sticky-nav">
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav">
+        <div class="sticky-nav-left">
+            <a href="dashboard.html" class="sticky-nav-title">Hamilton Estate</a>
+            <div class="sticky-nav-links">
+                <a href="dashboard.html" class="sticky-nav-link">Dashboard</a>
+                <a href="categorize.html" class="sticky-nav-link active">Quick Categorize</a>
+                <a href="review.html" class="sticky-nav-link">Detailed Review</a>
+                <a href="gallery.html" class="sticky-nav-link">Gallery View</a>
+            </div>
+        </div>
+        <div class="sticky-nav-right">
+            <span class="version-badge">v2.0.3</span>
+            <button onclick="logout()" class="logout-btn">Logout</button>
+        </div>
+    </nav>
+
     <div class="container">
-        <header>
-            <div class="header-top">
-                <div class="header-title">
-                    <h1>Hamilton Estate -- Categorize Items</h1>
-                </div>
-                <div class="header-system-info">
-                                            <span class="version-number">v2.0.0</span>
-                </div>
-            </div>
+        <div class="dashboard-header">
+            <h1>Hamilton Estate -- Categorize Items</h1>
             <div class="subtitle">Quick Categorization Workflow</div>
-            <div class="header-actions">
-                <a href="dashboard.html" class="header-btn">Dashboard</a>
-                <a href="gallery.html" class="header-btn">Gallery</a>
-                <a href="review.html" target="_blank" class="header-btn">Review Items</a>
-            </div>
-        </header>
+        </div>
 
         <div class="item-display" id="item-display" style="display: none;">
             <div class="item-header">
@@ -1364,6 +1370,12 @@
             const countElement = document.getElementById('item-count');
             countElement.textContent = `Showing all ${items.length} items`;
         });
+        
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
 
     </script>
 </body>

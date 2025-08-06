@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hamilton Estate -- Review Items</title>
+    <link rel="stylesheet" href="universal-styles.css">
     <style>
         * {
             margin: 0;
@@ -567,24 +568,29 @@
         }
     </style>
 </head>
-<body>
+<body class="with-sticky-nav">
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav">
+        <div class="sticky-nav-left">
+            <a href="dashboard.html" class="sticky-nav-title">Hamilton Estate</a>
+            <div class="sticky-nav-links">
+                <a href="dashboard.html" class="sticky-nav-link">Dashboard</a>
+                <a href="categorize.html" class="sticky-nav-link">Quick Categorize</a>
+                <a href="review.html" class="sticky-nav-link active">Detailed Review</a>
+                <a href="gallery.html" class="sticky-nav-link">Gallery View</a>
+            </div>
+        </div>
+        <div class="sticky-nav-right">
+            <span class="version-badge">v2.0.3</span>
+            <button onclick="logout()" class="logout-btn">Logout</button>
+        </div>
+    </nav>
+
     <div class="container">
-        <header>
-            <div class="header-top">
-                <div class="header-title">
-                    <h1>Hamilton Estate -- Review Items</h1>
-                </div>
-                                    <div class="header-system-info">
-                        <span class="version-number">v1.12.3</span>
-                    </div>
-            </div>
+        <div class="dashboard-header">
+            <h1>Hamilton Estate -- Review Items</h1>
             <div class="subtitle">Detailed Review & Comments Workflow</div>
-            <div class="header-actions">
-                <a href="dashboard.html" class="header-btn">Dashboard</a>
-                <a href="gallery.html" class="header-btn">Gallery</a>
-                <a href="categorize.html" target="_blank" class="header-btn">Categorize Items</a>
-            </div>
-        </header>
+        </div>
 
         <div class="item-display" id="item-display" style="display: none;">
             <div class="item-header">
@@ -1222,6 +1228,12 @@
             // Update results list
             updateResultsList();
         });
+        
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
 
     </script>
 </body>

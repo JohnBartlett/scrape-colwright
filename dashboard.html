@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hamilton Estate Inventory System</title>
+    <link rel="stylesheet" href="universal-styles.css">
     <style>
         * {
             margin: 0;
@@ -19,46 +20,35 @@
             line-height: 1.6;
         }
 
+        body.with-sticky-nav {
+            padding-top: 70px;
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 20px;
         }
 
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 15px 0;
-            margin: -20px -20px 30px -20px;
-            border-radius: 0;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        /* Dashboard specific styles */
+        .dashboard-header {
             text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
 
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
+        .dashboard-header h1 {
+            color: #667eea;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
         }
 
-        .header-title {
-            flex: 1;
-        }
-
-        .header-system-info {
-            text-align: right;
-            color: rgba(255,255,255,0.9);
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .version-number {
-            display: block;
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.7);
-            font-weight: 400;
-            margin-top: 2px;
+        .dashboard-header .subtitle {
+            color: #6b7280;
+            font-size: 1.1rem;
         }
 
         h1 {
@@ -484,25 +474,32 @@
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <div class="header-top">
-                <div class="header-title">
-                    <h1>Hamilton Estate Inventory System</h1>
-                </div>
-                <div class="header-system-info">
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <span style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">
-                            Welcome, <span id="user-name">User</span>
-                        </span>
-                        <button id="logout-btn" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Logout</button>
-                        <span class="version-number">v2.0.0</span>
-                    </div>
-                </div>
+<body class="with-sticky-nav">
+    <!-- Sticky Navigation -->
+    <nav class="sticky-nav">
+        <div class="sticky-nav-left">
+            <a href="dashboard.html" class="sticky-nav-title">Hamilton Estate</a>
+            <div class="sticky-nav-links">
+                <a href="dashboard.html" class="sticky-nav-link active">Dashboard</a>
+                <a href="categorize.html" class="sticky-nav-link">Quick Categorize</a>
+                <a href="review.html" class="sticky-nav-link">Detailed Review</a>
+                <a href="gallery.html" class="sticky-nav-link">Gallery View</a>
             </div>
-            <div class="subtitle">Complete Inventory Management & Review System</div>
-        </header>
+        </div>
+        <div class="sticky-nav-right">
+            <span class="version-badge">v2.0.3</span>
+            <span style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">
+                Welcome, <span id="user-name">User</span>
+            </span>
+            <button id="logout-btn" class="logout-btn">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Hamilton Estate</h1>
+            <div class="subtitle">WPB Content - Complete Inventory Management & Review System</div>
+        </div>
 
         <!-- Progress Bars Section -->
         <div class="dashboard-card">
@@ -758,6 +755,21 @@
         
         // Load data when page loads
         document.addEventListener('DOMContentLoaded', loadDashboardData);
+        
+        // Logout function
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+        
+        // Initialize user info
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                document.getElementById('user-name').textContent = user.name;
+            }
+        });
     </script>
 </body>
 </html> 

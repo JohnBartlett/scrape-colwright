@@ -1,0 +1,319 @@
+/* Universal Styles for Hamilton Estate Inventory System */
+
+/* ===== STICKY NAVIGATION ===== */
+.sticky-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.sticky-nav-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.sticky-nav-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+}
+
+.sticky-nav-links {
+    display: flex;
+    gap: 15px;
+}
+
+.sticky-nav-link {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.sticky-nav-link:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+
+.sticky-nav-link.active {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.sticky-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.version-badge {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+.logout-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Adjust body for sticky nav */
+body.with-sticky-nav {
+    padding-top: 70px;
+}
+
+/* ===== TOOLTIPS ===== */
+.tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.tooltip:hover::after,
+.tooltip:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ===== STATUS BADGES ===== */
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.uncategorized {
+    background: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.status-badge.categorized {
+    background: #dcfce7;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+.status-badge.reviewed {
+    background: #dbeafe;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+}
+
+.status-badge.no-image {
+    background: #fef3c7;
+    color: #d97706;
+    border: 1px solid #fed7aa;
+}
+
+.status-badge.needs-review {
+    background: #fce7f3;
+    color: #be185d;
+    border: 1px solid #fbcfe8;
+}
+
+.status-badge.has-comments {
+    background: #f0f9ff;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .sticky-nav {
+        padding: 10px 15px;
+    }
+    
+    .sticky-nav-title {
+        font-size: 1rem;
+    }
+    
+    .sticky-nav-links {
+        gap: 10px;
+    }
+    
+    .sticky-nav-link {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+    
+    .sticky-nav-right {
+        gap: 10px;
+    }
+    
+    .version-badge {
+        font-size: 0.7rem;
+    }
+    
+    .logout-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sticky-nav {
+        flex-direction: column;
+        gap: 10px;
+        padding: 8px 10px;
+    }
+    
+    .sticky-nav-left,
+    .sticky-nav-right {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    body.with-sticky-nav {
+        padding-top: 100px;
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .status-badge {
+        border-width: 2px;
+    }
+    
+    .sticky-nav {
+        border-bottom: 2px solid white;
+    }
+}
+
+/* Focus indicators */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* ===== LOADING STATES ===== */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 4px;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.text-muted {
+    color: #6b7280;
+}
+
+.text-success {
+    color: #16a34a;
+}
+
+.text-warning {
+    color: #d97706;
+}
+
+.text-danger {
+    color: #dc2626;
+}
+
+.text-info {
+    color: #2563eb;
+} 
