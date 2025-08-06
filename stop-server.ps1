@@ -36,14 +36,14 @@ Write-Host "`n📋 Step 3: Verifying processes are stopped..." -ForegroundColor 
 $remainingTunnel = Get-Process -Name "cloudflared" -ErrorAction SilentlyContinue
 $remainingServer = Get-Process -Name "node" -ErrorAction SilentlyContinue
 
-if (-not $remainingTunnel -and -not $remainingServer) {
+if ($null -eq $remainingTunnel -and $null -eq $remainingServer) {
     Write-Host "✅ All processes stopped successfully" -ForegroundColor Green
 } else {
     Write-Host "⚠️  Some processes may still be running:" -ForegroundColor Yellow
-    if ($remainingTunnel) {
+    if ($null -ne $remainingTunnel) {
         Write-Host "   • Cloudflare tunnel processes still running" -ForegroundColor Yellow
     }
-    if ($remainingServer) {
+    if ($null -ne $remainingServer) {
         Write-Host "   • Node.js processes still running" -ForegroundColor Yellow
     }
 }
@@ -65,7 +65,7 @@ if ($serverStopped) {
 # Step 4: Check if port 3000 is free
 Write-Host "`n📋 Step 4: Checking port status..." -ForegroundColor Cyan
 $portInUse = Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue
-if ($portInUse) {
+if ($null -ne $portInUse) {
     Write-Host "⚠️  Port 3000 is still in use. You may need to manually stop the process." -ForegroundColor Yellow
 } else {
     Write-Host "✅ Port 3000 is now free" -ForegroundColor Green
